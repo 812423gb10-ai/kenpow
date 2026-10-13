@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本国憲法 総まとめ＆出題範囲カスタマイズおさらいアプリ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@600;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                        serif: ['"Noto Serif JP"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f4f6f8',
+                            100: '#e5e9ee',
+                            600: '#1e293b',
+                            700: '#0f172a',
+                            amber: '#d97706',
+                            goldLight: '#fef3c7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            touch-action: manipulation;
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.2s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .blank-slot {
+            display: inline-block;
+            min-width: 4.5rem;
+            padding: 0.25rem 0.6rem;
+            margin: 0 0.25rem;
+            border-bottom: 3px solid #2563eb;
+            background-color: #eff6ff;
+            border-radius: 0.375rem;
+            font-weight: 700;
+            color: #1d4ed8;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .blank-slot.active {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+            border-color: #1d4ed8;
+            background-color: #dbeafe;
+        }
+        .blank-slot.filled {
+            background-color: #f0fdf4;
+            border-color: #16a34a;
+            color: #15803d;
+        }
+        .blank-slot.correct-highlight {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d !important;
+        }
+        .blank-slot.wrong-highlight {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #b91c1c !important;
+        }
+        /* トグルチップボタンのカスタムデザイン */
+        .chip-toggle {
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .chip-toggle.selected {
+            background-color: #1e293b;
+            color: #ffffff;
+            border-color: #1e293b;
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.15);
+        }
+        .chip-toggle.unselected {
+            background-color: #ffffff;
+            color: #94a3b8;
+            border-color: #cbd5e1;
+            opacity: 0.7;
+        }
+        /* カスタムスクロールバー */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased bg-slate-50 text-slate-800">
+
+    <!-- アプリ固定ヘッダー -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40 border-b border-amber-600/30">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('quiz')">
+                <div class="w-9 h-9 rounded-lg bg-amber-600 flex items-center justify-center font-serif text-white font-bold text-xl shadow">
+                    憲
+                </div>
+                <div>
+                    <h1 class="font-serif font-bold text-base sm:text-lg tracking-wide leading-tight text-slate-100">
+                        日本国憲法 <span class="text-amber-400 font-sans text-xs sm:text-sm font-semibold">総まとめおさらい</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400">全103条 ＋ 前文8文 完全マスター</p>
+                </div>
+            </div>
+
+            <!-- 右側コントロールボタン -->
+            <div class="flex items-center gap-2">
+                <!-- サウンド効果音トグル -->
+                <button id="btn-sound-toggle" onclick="toggleSound()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1 border border-slate-700 transition" title="効果音オン/オフ">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-amber-400"></i>
+                    <span class="hidden sm:inline">音: ON</span>
+                </button>
+
+                <!-- 出題範囲バッジ -->
+                <button onclick="switchTab('scope')" class="px-3 py-1.5 bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/40 rounded-lg text-amber-300 text-xs font-bold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>出題範囲: <span id="header-scope-count" class="text-white">111</span>/111</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ナビゲーションタブ -->
+        <nav class="bg-slate-800 border-t border-slate-700/60">
+            <div class="max-w-5xl mx-auto px-2 flex justify-around text-xs sm:text-sm">
+                <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="nav-tab py-2.5 px-3 flex items-center gap-1.5 border-b-2 border-amber-500 font-bold text-amber-400 transition">
+                    <i class="fa-solid fa-graduation-cap text-base"></i>
+                    <span>おさらいクイズ</span>
+                </button>
+                <button onclick="switchTab('scope')" id="tab-btn-scope" class="nav-tab py-2.5 px-3 flex items-center gap-1.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+                    <i class="fa-solid fa-sliders text-base"></i>
+                    <span>出題範囲設定</span>
+                </button>
+                <button onclick="switchTab('dictionary')" id="tab-btn-dictionary" class="nav-tab py-2.5 px-3 flex items-center gap-1.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+                    <i class="fa-solid fa-book-bookmark text-base"></i>
+                    <span>全条文辞書 (111)</span>
+                </button>
+                <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="nav-tab py-2.5 px-3 flex items-center gap-1.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+                    <i class="fa-solid fa-chart-line text-base"></i>
+                    <span>学習データ</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインコンテンツエリア -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6">
+
+        <!-- ================= 1. クイズセクション ================= -->
+        <section id="section-quiz" class="space-y-6">
+
+            <!-- 設定＆スタート画面 -->
+            <div id="quiz-setup-view" class="bg-white rounded-2xl p-5 sm:p-7 shadow-sm border border-slate-200 animate-fade-in space-y-6">
+                
+                <!-- 現在の出題範囲サマリーカード -->
+                <div class="bg-slate-900 text-white p-4 sm:p-5 rounded-xl flex flex-col sm:flex-row justify-between sm:items-center gap-3 border border-slate-700 shadow-sm">
+                    <div>
+                        <div class="text-xs text-amber-400 font-bold uppercase tracking-wider">Current Scope</div>
+                        <div class="text-lg font-bold font-serif flex items-center gap-2 mt-0.5">
+                            <i class="fa-solid fa-list-check text-amber-500"></i>
+                            現在の出題範囲: <span id="setup-scope-summary-text" class="text-amber-300">111 / 111 項目 (全選択中)</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">選択中の範囲からランダムに問題が生成されます。</p>
+                    </div>
+                    <button onclick="switchTab('scope')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition shrink-0 flex items-center justify-center gap-1.5 shadow">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>出題範囲を変更する</span>
+                    </button>
+                </div>
+
+                <!-- モード選択 -->
+                <div class="space-y-3">
+                    <h2 class="text-base font-bold font-serif text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad text-amber-600"></i>
+                        1. 学習モードの選択
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="relative flex p-4 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-slate-300 transition group has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/40">
+                            <input type="radio" name="quiz-mode" value="mix" checked class="sr-only">
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 mt-0.5 group-has-[:checked]:bg-indigo-600 group-has-[:checked]:text-white transition">
+                                    <i class="fa-solid fa-shuffle text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800 group-has-[:checked]:text-indigo-950">ランダムミックス</div>
+                                    <div class="text-xs text-slate-500 mt-0.5">穴埋め問題と「これ第何条？」問題をランダムに出題。</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="relative flex p-4 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-slate-300 transition group has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/40">
+                            <input type="radio" name="quiz-mode" value="blank" class="sr-only">
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 mt-0.5 group-has-[:checked]:bg-blue-600 group-has-[:checked]:text-white transition">
+                                    <i class="fa-solid fa-pen-to-square text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800 group-has-[:checked]:text-blue-950">穴埋め特化ドリル</div>
+                                    <div class="text-xs text-slate-500 mt-0.5">条文中の重要語句を正しく穴埋め暗記。</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="relative flex p-4 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-slate-300 transition group has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/40">
+                            <input type="radio" name="quiz-mode" value="number" class="sr-only">
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5 group-has-[:checked]:bg-emerald-600 group-has-[:checked]:text-white transition">
+                                    <i class="fa-solid fa-hashtag text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800 group-has-[:checked]:text-emerald-950">これ第何条？特化</div>
+                                    <div class="text-xs text-slate-500 mt-0.5">条文本文を見て正しい条文番号・前文番号を4択から識別。</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="relative flex p-4 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-slate-300 transition group has-[:checked]:border-amber-600 has-[:checked]:bg-amber-50/40">
+                            <input type="radio" name="quiz-mode" value="focus" class="sr-only" onchange="toggleFocusArticleSelect()">
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5 group-has-[:checked]:bg-amber-600 group-has-[:checked]:text-white transition">
+                                    <i class="fa-solid fa-bullseye text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800 group-has-[:checked]:text-amber-950">特定条文リピート特訓</div>
+                                    <div class="text-xs text-slate-500 mt-0.5">特定の1条文（または前文1節）を徹底反復暗記。</div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- 特定条文リピート時の選択ドロップダウン -->
+                    <div id="focus-article-wrapper" class="hidden bg-amber-50 p-4 rounded-xl border border-amber-200 animate-fade-in">
+                        <label class="block text-xs font-bold text-amber-900 mb-1">徹底演習したい条文・前文を選択:</label>
+                        <select id="focus-article-select" class="w-full bg-white border border-amber-300 rounded-lg p-2.5 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 穴埋め問題の解答方式設定（新規追加） -->
+                <div class="space-y-3 pt-2 border-t border-slate-100">
+                    <h2 class="text-base font-bold font-serif text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-keyboard text-amber-600"></i>
+                        2. 穴埋め問題の解答方式
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="flex items-start gap-3 p-3.5 rounded-xl border-2 border-slate-200 cursor-pointer bg-white hover:border-slate-300 transition group has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/30">
+                            <input type="radio" name="blank-answer-style" value="choice" checked class="mt-1 text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <div class="font-bold text-slate-800 text-xs sm:text-sm">選択式モード (文脈消去防止)</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">同グループ({理由}や{目的}等)からランダム出題。文脈で推測できない本格設計。</div>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3.5 rounded-xl border-2 border-slate-200 cursor-pointer bg-white hover:border-slate-300 transition group has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/30">
+                            <input type="radio" name="blank-answer-style" value="input" class="mt-1 text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <div class="font-bold text-slate-800 text-xs sm:text-sm">記述式モード (タイピング入力)</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">キーボード等で直接語句を入力。確実に正確な表記を覚えたい方に。</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 出題問題数設定 -->
+                <div class="space-y-3 pt-2 border-t border-slate-100">
+                    <h2 class="text-base font-bold font-serif text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-list-ol text-amber-600"></i>
+                        3. 出題数の設定
+                    </h2>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="setQuestionLimit(10)" class="limit-btn flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-300 bg-slate-900 text-white transition">10問</button>
+                        <button type="button" onclick="setQuestionLimit(20)" class="limit-btn flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-300 bg-white hover:bg-slate-100 transition">20問</button>
+                        <button type="button" onclick="setQuestionLimit(50)" class="limit-btn flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-300 bg-white hover:bg-slate-100 transition">50問</button>
+                        <button type="button" onclick="setQuestionLimit(-1)" class="limit-btn flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-300 bg-white hover:bg-slate-100 transition">全範囲網羅</button>
+                    </div>
+                </div>
+
+                <!-- 開始ボタン -->
+                <button onclick="startQuiz()" class="w-full bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition duration-200 flex items-center justify-center gap-2 text-base">
+                    <i class="fa-solid fa-play text-white"></i>
+                    <span>おさらいクイズを始める！</span>
+                </button>
+            </div>
+
+            <!-- クイズ回答進行画面 -->
+            <div id="quiz-active-view" class="hidden space-y-4">
+                
+                <!-- カウンター＆プログレス -->
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex flex-col gap-2">
+                    <div class="flex justify-between items-center text-xs text-slate-500 font-bold">
+                        <span id="quiz-progress-text">第 1 問 / 全 10 問</span>
+                        <span id="quiz-badge-type" class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold text-[11px]">穴埋め問題</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                        <div id="quiz-progress-bar" class="bg-gradient-to-r from-amber-500 to-indigo-600 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- クイズ問題メインカード -->
+                <div class="bg-white rounded-2xl p-5 sm:p-7 shadow-sm border border-slate-200 animate-fade-in space-y-6">
+                    
+                    <div class="flex justify-between items-start">
+                        <h3 id="quiz-headline" class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                        </h3>
+                        <button onclick="confirmExitQuiz()" class="text-xs text-slate-400 hover:text-slate-600 p-1">
+                            <i class="fa-solid fa-xmark text-base"></i> 中断
+                        </button>
+                    </div>
+
+                    <!-- 問題本文 -->
+                    <div id="quiz-question-body" class="p-4 sm:p-6 bg-slate-50 border border-slate-200 rounded-xl font-serif leading-relaxed text-base sm:text-lg text-slate-900 shadow-inner">
+                    </div>
+
+                    <!-- 穴埋めエリア (選択式 / 記述式) -->
+                    <div id="blank-interactive-area" class="space-y-4 hidden border-t border-slate-100 pt-4">
+                        
+                        <!-- 選択式UI -->
+                        <div id="blank-choice-container" class="space-y-3">
+                            <div class="text-xs font-bold text-slate-600 flex justify-between items-center bg-indigo-50/80 p-2.5 rounded-lg border border-indigo-100">
+                                <span id="group-guidance-text"><i class="fa-solid fa-layer-group text-indigo-600 mr-1"></i> 空欄を選択して語句を選んでください</span>
+                                <button onclick="clearAllBlanks()" class="text-indigo-600 hover:underline text-[11px] font-bold shrink-0">
+                                    <i class="fa-solid fa-arrow-rotate-left"></i> リセット
+                                </button>
+                            </div>
+                            <div id="blank-options-container" class="flex flex-wrap gap-2 pt-1">
+                            </div>
+                        </div>
+
+                        <!-- 記述式UI (新規追加) -->
+                        <div id="blank-input-container" class="hidden space-y-3">
+                            <div class="text-xs font-bold text-slate-600 flex justify-between items-center bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                                <span><i class="fa-solid fa-keyboard text-amber-600 mr-1"></i> 選択中の空欄に文字を入力してください:</span>
+                                <button onclick="clearAllBlanks()" class="text-amber-800 hover:underline text-[11px] font-bold shrink-0">
+                                    <i class="fa-solid fa-arrow-rotate-left"></i> リセット
+                                </button>
+                            </div>
+                            <div class="flex gap-2">
+                                <input type="text" id="blank-text-input" placeholder="語句を入力..." class="flex-1 px-4 py-2.5 border-2 border-slate-300 rounded-xl font-bold text-sm text-slate-800 focus:outline-none focus:border-indigo-600 bg-white shadow-sm" onkeydown="if(event.key==='Enter') submitBlankInputText()">
+                                <button onclick="submitBlankInputText()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow transition">
+                                    入力決定
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- これ第何条？4択エリア -->
+                    <div id="choice-interactive-area" class="grid grid-cols-2 gap-3 hidden border-t border-slate-100 pt-4">
+                    </div>
+
+                    <!-- 回答確定ボタン -->
+                    <div class="pt-2">
+                        <button id="btn-submit-answer" onclick="submitAnswer()" class="w-full bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-bold py-3.5 rounded-xl shadow transition text-base">
+                            回答を確定する
+                        </button>
+                    </div>
+
+                    <!-- フィードバック結果表示エリア -->
+                    <div id="quiz-feedback-box" class="hidden p-4 sm:p-5 rounded-xl border-2 animate-fade-in space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span id="feedback-icon" class="text-2xl"></span>
+                            <span id="feedback-title" class="font-bold text-lg"></span>
+                        </div>
+                        <div id="feedback-detail" class="text-sm font-medium"></div>
+
+                        <!-- 正解本文・キーワード解説 -->
+                        <div class="mt-3 p-3.5 bg-white/90 rounded-lg border border-slate-200 text-xs sm:text-sm font-sans space-y-2">
+                            <div class="font-bold text-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-book-open text-amber-600"></i> 【条文・前文 正しい全文】
+                            </div>
+                            <div id="feedback-full-text" class="font-serif leading-relaxed text-slate-900 border-l-2 border-amber-500 pl-3 py-0.5"></div>
+                            <div id="feedback-keywords-tags" class="flex flex-wrap gap-1 pt-2 border-t border-slate-100"></div>
+                        </div>
+
+                        <div class="pt-2">
+                            <button onclick="nextQuestion()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
+                                <span>次の問題へ進む</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- クイズ結果サマリー画面 -->
+            <div id="quiz-result-view" class="hidden bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 animate-fade-in space-y-6 text-center">
+                <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center text-3xl shadow-inner">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold font-serif text-slate-900">おさらいセッション完了！</h2>
+                    <p class="text-xs text-slate-500 mt-1">今回の解答結果と評価です</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div>
+                        <div class="text-xs text-slate-500 font-bold">正解数</div>
+                        <div id="result-score" class="text-2xl font-bold text-slate-900 mt-1">0 / 0</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 font-bold">正解率</div>
+                        <div id="result-rate" class="text-2xl font-bold text-indigo-600 mt-1">0%</div>
+                    </div>
+                </div>
+
+                <div id="result-evaluation-msg" class="text-sm font-medium text-slate-700"></div>
+
+                <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
+                    <button onclick="restartQuiz()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition text-sm">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> もう一度挑戦
+                    </button>
+                    <button onclick="switchTab('scope')" class="flex-1 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-bold py-3 px-4 rounded-xl transition text-sm">
+                        <i class="fa-solid fa-sliders mr-1"></i> 出題範囲を再設定
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================= 2. 出題範囲設定画面 ================= -->
+        <section id="section-scope" class="hidden space-y-5 animate-fade-in">
+            <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 space-y-5">
+                
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold font-serif text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-amber-600"></i>
+                            出題範囲の決定・カスタマイズ
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">おさらいしたい条文・前文のボタンをタップして出題対象（黒色）を選択してください。</p>
+                    </div>
+                    <div class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold shrink-0 text-center shadow">
+                        選択中: <span id="scope-total-selected" class="text-amber-400 text-sm">111</span> / 111 項目
+                    </div>
+                </div>
+
+                <!-- プリセットボタン群 -->
+                <div class="space-y-2">
+                    <div class="text-xs font-bold text-slate-500">一括選択プリセット:</div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="selectAllScope(true)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition">
+                            <i class="fa-solid fa-check-double mr-1"></i> 全て選択
+                        </button>
+                        <button onclick="selectAllScope(false)" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold transition">
+                            <i class="fa-solid fa-ban mr-1"></i> 全て解除
+                        </button>
+                        <button onclick="selectPresetScope('preamble')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 rounded-lg text-xs font-bold transition">
+                            前文のみ (8文)
+                        </button>
+                        <button onclick="selectPresetScope('human_rights')" class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-lg text-xs font-bold transition">
+                            基本的人権 (第10~40条)
+                        </button>
+                        <button onclick="selectPresetScope('governance')" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-lg text-xs font-bold transition">
+                            統治機構 (第41~95条)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 検索フィルター -->
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="scope-search-input" oninput="filterScopeItems()" placeholder="条文タイトルや番号で検索絞り込み..." class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <!-- 章別切り替えエリア -->
+                <div id="scope-chapters-container" class="space-y-6 pt-2">
+                </div>
+
+                <!-- 決定してクイズへ戻る -->
+                <div class="sticky bottom-4 pt-4 border-t border-slate-100 bg-white/90 backdrop-blur p-2">
+                    <button onclick="switchTab('quiz')" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check text-white"></i>
+                        <span>この範囲でクイズを開始する</span>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= 3. 全条文辞書 ================= -->
+        <section id="section-dictionary" class="hidden space-y-5 animate-fade-in">
+            <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-3">
+                    <div>
+                        <h2 class="text-xl font-bold font-serif text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-book-bookmark text-amber-600"></i>
+                            日本国憲法 全111項目 辞書
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">前文＋全103条文の正確な原文とキーフレーズを一括照会</p>
+                    </div>
+
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="dict-search-input" oninput="filterDictionary()" placeholder="条数やキーワードで検索..." class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                </div>
+
+                <div id="dict-chapter-filter" class="flex flex-wrap gap-1.5 text-xs">
+                </div>
+            </div>
+
+            <div id="dict-cards-container" class="space-y-4">
+            </div>
+        </section>
+
+        <!-- ================= 4. 学習データアナリティクス ================= -->
+        <section id="section-analytics" class="hidden space-y-6 animate-fade-in">
+            <div class="bg-white rounded-2xl p-5 sm:p-7 shadow-sm border border-slate-200 space-y-6">
+                <div class="border-b border-slate-100 pb-4 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold font-serif text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-amber-600"></i>
+                            全111項目の定着度アナリティクス
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">過去の回答履歴から得意・苦手条文を分析します</p>
+                    </div>
+                    <button onclick="resetStatsData()" class="text-xs text-rose-600 hover:text-rose-800 bg-rose-50 px-2.5 py-1.5 rounded-lg font-bold border border-rose-200 transition">
+                        <i class="fa-solid fa-trash-can"></i> 履歴リセット
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                        <div class="text-xs text-slate-500 font-bold">累計回答数</div>
+                        <div id="stats-total-ans" class="text-2xl font-bold text-slate-900 mt-1">0</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                        <div class="text-xs text-slate-500 font-bold">総合正解率</div>
+                        <div id="stats-accuracy-rate" class="text-2xl font-bold text-emerald-600 mt-1">0%</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center col-span-2 sm:col-span-1">
+                        <div class="text-xs text-slate-500 font-bold">マスター達成 (正率80%以上)</div>
+                        <div id="stats-mastered-count" class="text-2xl font-bold text-indigo-600 mt-1">0 / 111</div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="font-bold text-sm text-slate-800">全111項目の習熟メーター一覧</h3>
+                    <div id="stats-articles-list" class="space-y-2">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800 mt-12">
+        <div class="max-w-5xl mx-auto px-4 text-center space-y-1">
+            <p class="font-serif">日本国憲法 総まとめ＆出題範囲カスタマイズおさらいアプリ</p>
+            <p class="text-slate-500">前文①〜前文⑧ ＋ 第1条〜第103条（全111項目完全搭載）</p>
+        </div>
+    </footer>
+
+    <script>
+        /* JS Script Start */
+
+        // キーワードグループの表示ラベル
+        const GROUP_LABELS = {
+            reason: "【理由・根拠】",
+            purpose: "【目的・意図】",
+            actor: "【主体・機関】",
+            concept: "【権利・地位・制度】",
+            action: "【行為・述語】",
+            condition: "【条件・様態】",
+            number: "【数値・期間・割合】"
+        };
+
+        // Web Audio API サウンド効果音エンジン
+        let audioCtx = null;
+        let isSoundOn = true;
+
+        function playSound(type) {
+            if (!isSoundOn) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1);
+                    osc.frequency.setValueAtTime(783.99, now + 0.2);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+                    osc.start(now);
+                    osc.stop(now + 0.45);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.setValueAtTime(140, now + 0.15);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                }
+            } catch (e) {
+                console.log('Audio Error', e);
+            }
+        }
+
+        function toggleSound() {
+            isSoundOn = !isSoundOn;
+            const icon = document.getElementById('sound-icon');
+            const btn = document.getElementById('btn-sound-toggle');
+            if (isSoundOn) {
+                icon.className = 'fa-solid fa-volume-high text-amber-400';
+                btn.innerHTML = `<i class="fa-solid fa-volume-high text-amber-400"></i><span class="hidden sm:inline">音: ON</span>`;
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-slate-500';
+                btn.innerHTML = `<i class="fa-solid fa-volume-xmark text-slate-500"></i><span class="hidden sm:inline">音: OFF</span>`;
+            }
+        }
+
+        // 日本国憲法 全111項目マスターデータ (キーワードを単語レベル＆グループ分類に拡張)
+        const CONSTITUTION_ALL = [
+            // --- 前文 (8文) ---
+            { id: "pre_1", chapter: "前文", numStr: "前文①", title: "国権の発動と国民主権の確定", text: "日本国民は、正当に選挙された国会における代表者を通じて行動し、われらとわれらの子孫のために、諸国民との協和による成果と、わが国全土にわたつて自由のもたらす恵沢を確保し、政府の行為によつて再び戦争の惨禍が起ることのないやうにする事を決意し、ここに主権が国民に存することを宣言し、この憲法を確定する。", keywords: [{text:"正当に選挙", group:"reason"}, {text:"国会における代表者", group:"actor"}, {text:"諸国民との協和", group:"reason"}, {text:"主権が国民に存する", group:"concept"}, {text:"確定する", group:"action"}] },
+            { id: "pre_2", chapter: "前文", numStr: "前文②", title: "国政の正当性の由来と福利の享受", text: "そもそも国政は、国民の厳粛な信託によるものであつて、その権威は国民に由来し、その権力は国民の代表者が行使し、その福利は国民がこれを享受する。", keywords: [{text:"厳粛な信託", group:"reason"}, {text:"権威は国民に由来", group:"concept"}, {text:"代表者が行使", group:"action"}, {text:"福利は国民がこれを享受", group:"concept"}] },
+            { id: "pre_3", chapter: "前文", numStr: "前文③", title: "人類普遍の原理", text: "これは人類普遍の原理であり、この憲法は、かかる原理に基くものである。", keywords: [{text:"人類普遍の原理", group:"concept"}, {text:"基くもの", group:"action"}] },
+            { id: "pre_4", chapter: "前文", numStr: "前文④", title: "反する法規の排除", text: "われらは、これに反する一切の憲法、法律、命令及び詔勅を排除する。", keywords: [{text:"一切の憲法", group:"concept"}, {text:"法律", group:"concept"}, {text:"命令及び詔勅", group:"concept"}, {text:"排除する", group:"action"}] },
+            { id: "pre_5", chapter: "前文", numStr: "前文⑤", title: "平和主義と国際社会への信頼", text: "日本国民は、恒久の平和を念願し、人間相互の関係を支配する崇高な理想を深く自覚するのであつて、平和を愛する諸国民の公正と信義に信頼して、われらの安全と生存を保持しようと決意した。", keywords: [{text:"恒久の平和", group:"concept"}, {text:"崇高な理想", group:"concept"}, {text:"公正と信義", group:"condition"}, {text:"安全と生存を保持", group:"purpose"}] },
+            { id: "pre_6", chapter: "前文", numStr: "前文⑥", title: "名誉ある地位の追求と専制排除", text: "われらは、平和を維持し、専制と隷従、圧迫と偏狭を地上から永遠に除去しようと努めてゐる国際社会において、名誉ある地位を占めたいと思ふ。", keywords: [{text:"専制と隷従", group:"concept"}, {text:"圧迫と偏狭", group:"concept"}, {text:"永遠に除去", group:"purpose"}, {text:"名誉ある地位", group:"concept"}] },
+            { id: "pre_7", chapter: "前文", numStr: "前文⑦", title: "平和的生存権の確認", text: "われらは、全世界の国民が、ひとしく恐怖と欠乏から免かれ、平和のうちに生存する権利を有することを確認する。", keywords: [{text:"全世界の国民", group:"actor"}, {text:"恐怖と欠乏", group:"condition"}, {text:"平和のうちに生存する権利", group:"concept"}] },
+            { id: "pre_8", chapter: "前文", numStr: "前文⑧", title: "国際道徳の遵守と責務", text: "われらは、いづれの国家も、自国のことのみに専念して他国を無視してはならないのであつて、政治道徳の法則は、普遍的なものであり、この法則に従ふことは、自国の主権を維持し、他国と対等関係に立たうとする各国の責務であると信ずる。日本国民は、国家の名誉にかけ、全力をあげてこの崇高な理想と目的を達成することを誓ふ。", keywords: [{text:"政治道徳の法則", group:"concept"}, {text:"普遍的なもの", group:"condition"}, {text:"他国と対等関係", group:"concept"}, {text:"各国の責務", group:"concept"}] },
+
+            // --- 第1章 天皇 ---
+            { id: "art_1", chapter: "第1章 天皇", numStr: "第1条", title: "天皇の地位と主権在民", text: "天皇は、日本国の象徴であり日本国民統合の象徴であつて、この地位は、主権の存する日本国民の総意に基く。", keywords: [{text:"日本国の象徴", group:"concept"}, {text:"日本国民統合の象徴", group:"concept"}, {text:"主権の存する", group:"concept"}, {text:"日本国民の総意", group:"reason"}] },
+            { id: "art_2", chapter: "第1章 天皇", numStr: "第2条", title: "皇位の継承", text: "皇位は、世襲のものであつて、国会の議決した皇室典範の定めるところにより、これを継承する。", keywords: [{text:"世襲", group:"concept"}, {text:"国会の議決", group:"reason"}, {text:"皇室典範", group:"concept"}] },
+            { id: "art_3", chapter: "第1章 天皇", numStr: "第3条", title: "国政に関する行為の助言と承認", text: "天皇の国政に関するすべての行為には、内閣の助言と承認を必要とし、内閣が、その責任を負ふ。", keywords: [{text:"国政に関するすべての行為", group:"concept"}, {text:"内閣の助言と承認", group:"reason"}, {text:"内閣が、その責任を負ふ", group:"action"}] },
+            { id: "art_4", chapter: "第1章 天皇", numStr: "第4条", title: "天皇の権能の限界・委任", text: "天皇は、この憲法の定める国政に関する権能のみを有し、国政に関する権能を有しない。二 天皇は、法律の定めるところにより、その国政に関する行為を委任することができる。", keywords: [{text:"国政に関する権能を有しない", group:"condition"}, {text:"行為を委任", group:"action"}] },
+            { id: "art_5", chapter: "第1章 天皇", numStr: "第5条", title: "摂政", text: "皇室典範の定めるところにより摂政を置くときは、摂政は、天皇の名でその国政に関する行為を行ふ。この場合には、前条第一項の規定を準用する。", keywords: [{text:"皇室典範", group:"concept"}, {text:"摂政", group:"actor"}, {text:"天皇の名で", group:"condition"}] },
+            { id: "art_6", chapter: "第1章 天皇", numStr: "第6条", title: "天皇の任命権", text: "天皇は、国会の指名に基いて、内閣総理大臣を任命する。二 天皇は、内閣の指名に基いて、最高裁判所長官を任命する。", keywords: [{text:"国会の指名", group:"reason"}, {text:"内閣総理大臣を任命", group:"action"}, {text:"最高裁判所長官を任命", group:"action"}] },
+            { id: "art_7", chapter: "第1章 天皇", numStr: "第7条", title: "天皇の国事行為", text: "天皇は、内閣の助言と承認により、国民のために、左の国政に関する行為を行ふ。一 憲法改正、法律、政令及び条約を公布すること。二 国会を召集すること。三 衆議院を解散すること。四 国会議員の総選挙の施行を告示すること。五 大臣等の任免等を認証すること。六 赦免を認証すること。七 栄典を授与すること。八 批准書等の外交文書を認証すること。九 外国の大使等を提出・受領すること。十 儀式を行ふこと。", keywords: [{text:"内閣の助言と承認", group:"reason"}, {text:"憲法改正、法律、政令及び条約を公布", group:"action"}, {text:"衆議院を解散", group:"action"}, {text:"栄典を授与", group:"action"}] },
+            { id: "art_8", chapter: "第1章 天皇", numStr: "第8条", title: "皇室財産と授受の制限", text: "皇室に財産を譲り渡し、又は皇室が、財産を譲り受け、若しくは志に譲与することは、国会の議決に基かなければならない。", keywords: [{text:"皇室に財産", group:"concept"}, {text:"国会の議決", group:"reason"}] },
+
+            // --- 第2章 戦争の放棄 ---
+            { id: "art_9", chapter: "第2章 戦争の放棄", numStr: "第9条", title: "戦争の放棄と戦力・交戦権の否認", text: "日本国民は、正義と秩序を基調とする国際平和を誠実に希求し、国権の発動たる戦争と、武力による威嚇又は武力の行使は、国際紛争を解決する手段としては、永久にこれを放棄する。二 前項の目的を達するため、陸海空軍その他の戦力は、これを保持しない。国の交戦権は、これを認めない。", keywords: [{text:"国際平和を誠実に希求", group:"purpose"}, {text:"武力による威嚇又は武力の行使", group:"concept"}, {text:"永久にこれを放棄", group:"action"}, {text:"陸海空軍その他の戦力", group:"concept"}, {text:"交戦権は、これを認めない", group:"action"}] },
+
+            // --- 第3章 国民の権利及び義務 ---
+            { id: "art_10", chapter: "第3章 国民の権利及び義務", numStr: "第10条", title: "国民の要件", text: "日本国民たる要件は、法律でこれを定める。", keywords: [{text:"日本国民たる要件", group:"concept"}, {text:"法律でこれを定める", group:"reason"}] },
+            { id: "art_11", chapter: "第3章 国民の権利及び義務", numStr: "第11条", title: "基本的人権の享有", text: "国民は、すべての基本的人権の享有を妨げられない。この憲法が国民に保障する基本的人権は、侵すことのできない永久の権利として、現在及び将来の国民に与へられる。", keywords: [{text:"基本的人権の享有", group:"concept"}, {text:"侵すことのできない永久の権利", group:"concept"}, {text:"現在及び将来の国民", group:"actor"}] },
+            { id: "art_12", chapter: "第3章 国民の権利及び義務", numStr: "第12条", title: "自由・権利の保持責任と公共の福祉", text: "この憲法が国民に保障する自由及び権利は、国民の不断の努力によつて、これを保持しなければならない。又、国民は、これを濫用してはならないのであつて、常に公共の福祉のためにこれを利用する責任を負ふ。", keywords: [{text:"不断の努力", group:"condition"}, {text:"保持しなければならない", group:"action"}, {text:"濫用してはならない", group:"action"}, {text:"公共の福祉", group:"concept"}] },
+            { id: "art_13", chapter: "第3章 国民の権利及び義務", numStr: "第13条", title: "個人の尊重・生命自由幸福追求権", text: "すべて国民は、個人として尊重される。生命、自由及び幸福追求に対する国民の権利については、公共の福祉に反しない限り、立法その他の国政の上で、最大の尊重を必要とする。", keywords: [{text:"個人として尊重される", group:"action"}, {text:"生命、自由及び幸福追求", group:"concept"}, {text:"最大の尊重", group:"concept"}] },
+            { id: "art_14", chapter: "第3章 国民の権利及び義務", numStr: "第14条", title: "法の下の平等・華族禁止・栄典", text: "すべて国民は、法の下に平等であつて、人種、信条、性別、社会的身分又は門地により、政治的、経済的又は社会的関係において、差別されない。二 華族その他の貴族の制度は、これを認めない。三 栄典の授与は、いかなる特権も伴はない。栄典の授与は、現にこれを有し、又は将来これを受ける者の一代に限り、その効力を有する。", keywords: [{text:"法の下に平等", group:"concept"}, {text:"人種、信条、性別", group:"condition"}, {text:"差別されない", group:"action"}, {text:"華族その他の貴族の制度", group:"concept"}, {text:"栄典の授与", group:"concept"}] },
+            { id: "art_15", chapter: "第3章 国民の権利及び義務", numStr: "第15条", title: "公務員の選定罷免権・全体奉仕者性", text: "公務員を選定し、及びこれを罷免することは、国民固有の権利である。二 すべて公務員は、全体の奉仕者であつて、一部の奉仕者ではない。三 公務員の選挙については、成年者による普通選挙を保障する。四 すべて選挙における投票の秘密は、これを侵してはならない。選挙人は、その選択について公私ともに責任を問はれない。", keywords: [{text:"選定し、及びこれを罷免", group:"action"}, {text:"国民固有の権利", group:"concept"}, {text:"全体の奉仕者", group:"concept"}, {text:"普通選挙", group:"concept"}, {text:"投票の秘密", group:"concept"}] },
+            { id: "art_16", chapter: "第3章 国民の権利及び義務", numStr: "第16条", title: "請願権", text: "何人も、損害の救済、公務員の罷免、法律、命令又は規則の制定、廃止又は改正その他の事項に関し、平穏に請願する権利を有し、何人も、かかる請願をしたためにいかなる差別待遇も受けない。", keywords: [{text:"損害の救済", group:"purpose"}, {text:"平穏に請願する権利", group:"concept"}, {text:"差別待遇も受けない", group:"action"}] },
+            { id: "art_17", chapter: "第3章 国民の権利及び義務", numStr: "第17条", title: "国家賠償請求権", text: "何人も、公務員の不法行為により、損害を受けたときは、法律の定めるところにより、国又は公共団体に、その賠償を求めることができる。", keywords: [{text:"公務員の不法行為", group:"reason"}, {text:"国又は公共団体に", group:"actor"}, {text:"賠償を求めることができる", group:"action"}] },
+            { id: "art_18", chapter: "第3章 国民の権利及び義務", numStr: "第18条", title: "奴隷的拘束・苦役の禁止", text: "何人も、いかなる奴隷的拘束も受けない。又、犯罪に因る処罰の場合を除いては、その意に反する苦役に服させられない。", keywords: [{text:"奴隷的拘束", group:"concept"}, {text:"意に反する苦役", group:"concept"}] },
+            { id: "art_19", chapter: "第3章 国民の権利及び義務", numStr: "第19条", title: "思想及び良心の自由", text: "思想及び良心の自由は、これを侵してはならない。", keywords: [{text:"思想及び良心の自由", group:"concept"}, {text:"侵してはならない", group:"action"}] },
+            { id: "art_20", chapter: "第3章 国民の権利及び義務", numStr: "第20条", title: "信教の自由・政教分離原則", text: "信教の自由は、何人に対してもこれを保障する。いかなる宗教団体も、国から特権を受け、又は政治上の権力を行使してはならない。二 何人も、宗教上の行為、祝典、儀式又は行事に参加することを強制されない。三 国及びその機関は、宗教教育その他いかなる宗教的活動もしてはならない。", keywords: [{text:"信教の自由", group:"concept"}, {text:"政治上の権力を行使", group:"action"}, {text:"宗教上の行為", group:"concept"}, {text:"宗教教育その他いかなる宗教的活動", group:"concept"}] },
+            { id: "art_21", chapter: "第3章 国民の権利及び義務", numStr: "第21条", title: "表現の自由・検閲の禁止・通信の秘密", text: "集会、結社及び言論、出版その他一切の表現の自由は、これを保障する。二 検閲は、これをしてはならない。通信の秘密は、これを侵してはならない。", keywords: [{text:"集会、結社及び言論、出版", group:"concept"}, {text:"表現の自由", group:"concept"}, {text:"検閲は、これをしてはならない", group:"action"}, {text:"通信の秘密", group:"concept"}] },
+            { id: "art_22", chapter: "第3章 国民の権利及び義務", numStr: "第22条", title: "居住移転・職業選択の自由・国籍離脱", text: "何人も、公共の福祉に反しない限り、居住、移転及び職業選択の自由を有する。二 すべて国民は、外国に移住し、又は国籍を離脱する自由を侵されない。", keywords: [{text:"居住、移転及び職業選択の自由", group:"concept"}, {text:"公共の福祉", group:"concept"}, {text:"外国に移住", group:"action"}, {text:"国籍を離脱する自由", group:"concept"}] },
+            { id: "art_23", chapter: "第3章 国民の権利及び義務", numStr: "第23条", title: "学問の自由", text: "学問の自由は、これを保障する。", keywords: [{text:"学問の自由", group:"concept"}, {text:"保障する", group:"action"}] },
+            { id: "art_24", chapter: "第3章 国民の権利及び義務", numStr: "第24条", title: "家族生活における両性の本質的平等", text: "婚姻は、両性の合意のみに基いて成立し、夫婦が同等の権利を有することを基本として、相互の協力により、維持されなければならない。二 配偶者の選択、財産権、相続、住居の選定、離婚並びに婚姻及び家族に関するその他の事項に関しては、法律は、個人の尊厳と両性の本質的平等に立脚して、制定されなければならない。", keywords: [{text:"両性の合意のみ", group:"reason"}, {text:"同等の権利", group:"concept"}, {text:"個人の尊厳と両性の本質的平等", group:"concept"}] },
+            { id: "art_25", chapter: "第3章 国民の権利及び義務", numStr: "第25条", title: "生存権・社会保障等の向上義務", text: "すべて国民は、健康で文化的な最低限度の生活を営む権利を有する。二 国は、すべての生活部面について、社会福祉、社会保障及び公衆衛生の向上及び増進に努めなければならない。", keywords: [{text:"健康で文化的な最低限度の生活", group:"concept"}, {text:"権利を有する", group:"action"}, {text:"社会福祉、社会保障及び公衆衛生", group:"concept"}, {text:"向上及び増進", group:"purpose"}] },
+            { id: "art_26", chapter: "第3章 国民の権利及び義務", numStr: "第26条", title: "教育を受ける権利・受けさせる義務", text: "すべて国民は、法律の定めるところにより、その能力に応じて、ひとしく教育を受ける権利を有する。二 すべて国民は、法律の定めるところにより、その保護する子女に普通教育を受けさせる義務を負ふ。義務教育は、これを無償とする。", keywords: [{text:"能力に応じて", group:"condition"}, {text:"教育を受ける権利", group:"concept"}, {text:"普通教育を受けさせる義務", group:"concept"}, {text:"義務教育は、これを無償とする", group:"concept"}] },
+            { id: "art_27", chapter: "第3章 国民の権利及び義務", numStr: "第27条", title: "勤労の権利義務・勤労条件・児童酷使禁止", text: "すべて国民は、勤労の権利を有し、義務を負ふ。二 賃金、就業時間、休息その他の勤労条件に関する基準は、法律でこれを定める。三 児童は、これを酷使してはならない。", keywords: [{text:"勤労の権利を有し、義務を負ふ", group:"concept"}, {text:"勤労条件に関する基準", group:"concept"}, {text:"児童は、これを酷使してはならない", group:"action"}] },
+            { id: "art_28", chapter: "第3章 国民の権利及び義務", numStr: "第28条", title: "労働基本権（団結権・交渉権・行動権）", text: "勤労者の団結する権利及び団体交渉その他の団体行動をする権利は、これを保障する。", keywords: [{text:"団結する権利", group:"concept"}, {text:"団体交渉", group:"concept"}, {text:"団体行動をする権利", group:"concept"}] },
+            { id: "art_29", chapter: "第3章 国民の権利及び義務", numStr: "第29条", title: "財産権の保障と公共の福祉", text: "財産権は、これを侵してはならない。二 財産権の内容は、公共の福祉に適合するやうに、法律でこれを定める。三 私有財産は、正当な補償の下に、これを公共のために用ひることができる。", keywords: [{text:"財産権は、これを侵してはならない", group:"action"}, {text:"公共の福祉に適合", group:"condition"}, {text:"正当な補償の下に", group:"reason"}] },
+            { id: "art_30", chapter: "第3章 国民の権利及び義務", numStr: "第30条", title: "納税の義務", text: "国民は、法律の定めるところにより、納税の義務を負ふ。", keywords: [{text:"納税の義務", group:"concept"}] },
+            { id: "art_31", chapter: "第3章 国民の権利及び義務", numStr: "第31条", title: "適正手続の保障（デュー・プロセス）", text: "何人も、法律の定める手続によらなければ、その生命若しくは自由を奪はれ、又はその他の刑罰を科せられない。", keywords: [{text:"法律の定める手続", group:"reason"}, {text:"生命若しくは自由を奪はれ", group:"action"}, {text:"刑罰を科せられない", group:"action"}] },
+            { id: "art_32", chapter: "第3章 国民の権利及び義務", numStr: "第32条", title: "裁判を受ける権利", text: "何人も、裁判所において裁判を受ける権利を奪はれない。", keywords: [{text:"裁判所において裁判を受ける権利", group:"concept"}] },
+            { id: "art_33", chapter: "第3章 国民の権利及び義務", numStr: "第33条", title: "逮捕の要件・令状主義", text: "何人も、現行犯として逮捕される場合を除いては、権限を有する司法官憲が発し、且つ理由となつてゐる犯罪を明示する令状によらなければ、逮捕されない。", keywords: [{text:"現行犯として逮捕される場合を除いては", group:"condition"}, {text:"司法官憲", group:"actor"}, {text:"令状によらなければ、逮捕されない", group:"reason"}] },
+            { id: "art_34", chapter: "第3章 国民の権利及び義務", numStr: "第34条", title: "抑留・拘禁に対する手続的保障", text: "何人も、理由を直ちに告げられ、且つ、直ちに弁護人に依頼する権利を与へられなければ、抑留又は拘禁されない。又、何人も、正当な理由がなければ、拘禁されず、要求があれば、その理由は、直ちに本人及びその弁護人の出席する公開の法廷で示されなければならない。", keywords: [{text:"弁護人に依頼する権利", group:"concept"}, {text:"抑留又は拘禁されない", group:"action"}, {text:"公開の法廷で示されなければならない", group:"action"}] },
+            { id: "art_35", chapter: "第3章 国民の権利及び義務", numStr: "第35条", title: "住居の不可侵・捜索押収の令状主義", text: "何人も、その住居、書類及び所持品について、侵入、捜索及び押収を受けることのない権利は、第三十三条の場合を除いては、正当な理由に基いて発せられ、且つ捜索する場所及び押収する物品を明示する令状によらなければ、侵されない。二 捜索又は押収は、権限を有する司法官憲が発する別個の令状による。", keywords: [{text:"住居、書類及び所持品", group:"concept"}, {text:"捜索及び押収", group:"action"}, {text:"別個の令状", group:"reason"}] },
+            { id: "art_36", chapter: "第3章 国民の権利及び義務", numStr: "第36条", title: "拷問及び残虐な刑罰の禁止", text: "公務員による拷問及び残虐な刑罰は、絶対にこれを禁ずる。", keywords: [{text:"公務員による拷問", group:"concept"}, {text:"残虐な刑罰", group:"concept"}, {text:"絶対にこれを禁ずる", group:"action"}] },
+            { id: "art_37", chapter: "第3章 国民の権利及び義務", numStr: "第37条", title: "刑事被告人の権利（公平な裁判・弁護人依頼）", text: "すべて刑事事件においては、被告人は、公平な裁判所の迅速な公開裁判を受ける権利を有する。二 刑事被告人は、すべての証人に対して審問する機会を十分に与へられ、又、公費で自己のために強制的手続により証人を求める権利を有する。三 刑事被告人は、いかなる場合にも、資格を有する弁護人を依頼することができる。被告人が自らこれを依頼することができないときは、国でこれを付する。", keywords: [{text:"公平な裁判所の迅速な公開裁判", group:"concept"}, {text:"公費で自己のために", group:"reason"}, {text:"資格を有する弁護人", group:"actor"}, {text:"国でこれを付する", group:"action"}] },
+            { id: "art_38", chapter: "第3章 国民の権利及び義務", numStr: "第38条", title: "自己不利益自白の強要禁止・自白の証拠能力", text: "何人も、自己に不利益な供述を強制されない。二 強制、拷問若しくは脅迫による自白、又は不当に長い抑留若しくは拘禁の後の自白は、これを証拠とすることができない。三 何人も、自己に不利益な唯一の証拠が本人の自白である場合には、有罪とされ、又は刑罰を科せられない。", keywords: [{text:"自己に不利益な供述を強制されない", group:"action"}, {text:"自白", group:"concept"}, {text:"証拠とすることができない", group:"action"}, {text:"唯一の証拠が本人の自白", group:"condition"}] },
+            { id: "art_39", chapter: "第3章 国民の権利及び義務", numStr: "第39条", title: "遡及処罰の禁止・一事不再理", text: "何人も、実行の時に適法であつた行為又は既に無罪とされた行為については、刑事上の責任を問はれない。又、同一の犯罪について、重ねて刑事上の責任を問はれない。", keywords: [{text:"実行の時に適法であつた行為", group:"reason"}, {text:"重ねて刑事上の責任を問はれない", group:"action"}] },
+            { id: "art_40", chapter: "第3章 国民の権利及び義務", numStr: "第40条", title: "刑事補償請求権", text: "抑留又は拘禁された後、無罪の裁判を受けたときは、法律の定めるところにより、国にその補償を求めることができる。", keywords: [{text:"抑留又は拘禁された後", group:"condition"}, {text:"無罪の裁判を受けたとき", group:"reason"}, {text:"国にその補償を求めることができる", group:"action"}] },
+
+            // --- 第4章 国会 ---
+            { id: "art_41", chapter: "第4章 国会", numStr: "第41条", title: "国会の地位（最高機関・唯一の立法機関）", text: "国会は、国権の最高機関であつて、国の唯一の立法機関である。", keywords: [{text:"国権の最高機関", group:"concept"}, {text:"唯一の立法機関", group:"concept"}] },
+            { id: "art_42", chapter: "第4章 国会", numStr: "第42条", title: "両院制", text: "国会は、衆議院及び参議院の両議院でこれを構成する。", keywords: [{text:"衆議院及び参議院", group:"actor"}, {text:"両議院でこれを構成する", group:"action"}] },
+            { id: "art_43", chapter: "第4章 国会", numStr: "第43条", title: "両議院の組織・代表", text: "両議院は、全国民を代表する選出された議員でこれを構成する。二 議員の定数は、法律でこれを定める。", keywords: [{text:"全国民を代表する", group:"condition"}, {text:"選出された議員", group:"actor"}, {text:"定数は、法律でこれを定める", group:"reason"}] },
+            { id: "art_44", chapter: "第4章 国会", numStr: "第44条", title: "議員及び選挙人の資格の平等", text: "両議院の議員及びその選挙人の資格は、法律でこれを定める。但し、人種、信条、性別、社会的身分、門地、教育、資産又は収入によつて差別してはならない。", keywords: [{text:"選挙人の資格", group:"concept"}, {text:"差別してはならない", group:"action"}] },
+            { id: "art_45", chapter: "第4章 国会", numStr: "第45条", title: "衆議院議員の任期", text: "衆議院議員の任期は、四年とする。但し、衆議院解散の場合には、その期間満了前に終了する。", keywords: [{text:"任期は、四年", group:"number"}, {text:"衆議院解散の場合", group:"condition"}] },
+            { id: "art_46", chapter: "第4章 国会", numStr: "第46条", title: "参議院議員の任期・改選", text: "参議院議員の任期は、六年とし、三年ごとに議員の半数を改選する。", keywords: [{text:"任期は、六年", group:"number"}, {text:"三年ごとに議員の半数を改選", group:"number"}] },
+            { id: "art_47", chapter: "第4章 国会", numStr: "第47条", title: "選挙事項の法律主義", text: "選挙区、投票の方法その他両議院の議員の選挙に関する事項は、法律でこれを定める。", keywords: [{text:"選挙区、投票の方法", group:"concept"}, {text:"法律でこれを定める", group:"reason"}] },
+            { id: "art_48", chapter: "第4章 国会", numStr: "第48条", title: "両議院議員の兼職禁止", text: "何人も、同時に両議院の議員たることはできない。", keywords: [{text:"同時に両議院の議員たることはできない", group:"action"}] },
+            { id: "art_49", chapter: "第4章 国会", numStr: "第49条", title: "議員の歳費受領権", text: "両議院の議員は、法律の定めるところにより、国庫から相当の歳費を受ける。", keywords: [{text:"国庫から相当の歳費を受ける", group:"action"}] },
+            { id: "art_50", chapter: "第4章 国会", numStr: "第50条", title: "不逮捕特権", text: "両議院の議員は、法律の定める場合を除いては、国会の会期中逮捕されず、会期前に逮捕された議員は、その議院の要求があれば、会期中釈放されなければならない。", keywords: [{text:"会期中逮捕されず", group:"action"}, {text:"その議院の要求があれば", group:"reason"}, {text:"釈放されなければならない", group:"action"}] },
+            { id: "art_51", chapter: "第4章 国会", numStr: "第51条", title: "免責特権", text: "両議院の議員は、議院で行つた演説、討論又は投票について、院外で責任を問はれない。", keywords: [{text:"演説、討論又は投票", group:"concept"}, {text:"院外で責任を問はれない", group:"action"}] },
+            { id: "art_52", chapter: "第4章 国会", numStr: "第52条", title: "常会（通常国会）", text: "国会の常会は、毎年一回これを召集する。", keywords: [{text:"常会は、毎年一回これを召集する", group:"number"}] },
+            { id: "art_53", chapter: "第4章 国会", numStr: "第53条", title: "臨時会（臨時国会）", text: "内閣は、国会の臨時会の召集を決定することができる。いずれかの議院の総議員の四分の一以上の要求があれば、内閣は、その召集を決定しなければならない。", keywords: [{text:"臨時会", group:"concept"}, {text:"総議員の四分の一以上", group:"number"}, {text:"召集を決定しなければならない", group:"action"}] },
+            { id: "art_54", chapter: "第4章 国会", numStr: "第54条", title: "衆議院解散・特別会・参議院の緊急集会", text: "衆議院が解散されたときは、解散の日から四十日以内に、衆議院議員の総選挙を行ひ、その選挙の日から三十日以内に、国会を召集しなければならない。二 衆議院が解散されたときは、参議院は、同時に閉会となる。但し、内閣は、国に緊急の必要がありますときは、参議院の緊急集会を求めることができる。三 前項但書の緊急集会において採られた措置は、臨時のものであつて、次の国会開会の後十日以内に、衆議院の同意がないときは、その効力を失ふ。", keywords: [{text:"四十日以内に", group:"number"}, {text:"三十日以内に", group:"number"}, {text:"参議院の緊急集会", group:"concept"}, {text:"衆議院の同意がないときは", group:"condition"}] },
+            { id: "art_55", chapter: "第4章 国会", numStr: "第55条", title: "資格争訟の裁判", text: "両議院は、各々その議員の資格に関する争訟を裁判する。但し、議員の議席を失はせるには、出席議員の三分の二以上の多数による議決を必要とする。", keywords: [{text:"資格に関する争訟を裁判", group:"action"}, {text:"出席議員の三分の二以上", group:"number"}] },
+            { id: "art_56", chapter: "第4章 国会", numStr: "第56条", title: "定足数・表決数", text: "両議院は、各々その総議員の三分の一以上の出席がなければ、議事を開き議決することができない。二 両議院の議事は、この憲法に特別の定のある場合を除いては、出席議員の過半数でこれを決め、可否同数のときは、議長の決するところによる。", keywords: [{text:"総議員の三分の一以上", group:"number"}, {text:"出席議員の過半数", group:"number"}, {text:"可否同数のときは、議長の決するところによる", group:"reason"}] },
+            { id: "art_57", chapter: "第4章 国会", numStr: "第57条", title: "会議の公開・秘密会・会議録", text: "両議院の会議は、公開とする。但し、出席議員の三分の二以上の多数で議決したときは、秘密会を開くことができる。二 両議院は、各々その会議の記録を保存し、秘密会の記録の中で特に秘密を要すると認められるもの以外のものは、これを公表し、且つ一般に流通させなければならない。三 出席議員の五分の一以上の要求があれば、各議員の表決は、これを会議録に記載しなければならない。", keywords: [{text:"会議は、公開とする", group:"action"}, {text:"出席議員の三分の二以上", group:"number"}, {text:"秘密会", group:"concept"}, {text:"出席議員の五分の一以上", group:"number"}] },
+            { id: "art_58", chapter: "第4章 国会", numStr: "第58条", title: "役員の選任・自主ルール制定・懲罰", text: "両議院は、各々その議長その他の役員を選任する。二 両議院は、各々その会議その他の手続及び内部の規律に関するルールを定め、又、議員を懲罰することができる。但し、議員を除名するには、出席議員の三分の二以上の多数による議決を必要とする。", keywords: [{text:"役員を選任", group:"action"}, {text:"内部の規律に関するルール", group:"concept"}, {text:"除名するには、出席議員の三分の二以上", group:"number"}] },
+            { id: "art_59", chapter: "第4章 国会", numStr: "第59条", title: "法律案の可決・衆議院の優越", text: "法律案は、両議院で可決したとき法律となる。二 衆議院で可決し、参議院でこれと異なつた議決をした法律案は、衆議院で出席議員の三分の二以上の多数で再び可決したときは、法律となる。三 前項の規定は、法律の定めるところにより、衆議院が、両議院の協議会を開くことを求めることを妨げない。四 参議院が、衆議院の可決した法律案を受け取つた後、国会休会中の期間を除いて六十日以内に、議決しないときは、衆議院は、参議院がその法律案を否決したものとみなすことができる。", keywords: [{text:"出席議員の三分の二以上の多数で再び可決", group:"number"}, {text:"両議院の協議会", group:"actor"}, {text:"六十日以内に、議決しないとき", group:"number"}] },
+            { id: "art_60", chapter: "第4章 国会", numStr: "第60条", title: "予算先議権・衆議院の優越", text: "予算は、さきに衆議院に提出しなければならない。二 予算について、参議院で衆議院と異なつた議決をした場合に、法律の定めるところにより、両議院の協議会を開いても意見が一致しないとき、又は参議院が、衆議院の可決した予算を受け取つた後、国会休会中の期間を除いて三十日以内に、議決しないときは、衆議院の議決を国会の議決とする。", keywords: [{text:"さきに衆議院に提出", group:"action"}, {text:"両議院の協議会", group:"actor"}, {text:"三十日以内に、議決しないとき", group:"number"}, {text:"衆議院の議決を国会の議決とする", group:"action"}] },
+            { id: "art_61", chapter: "第4章 国会", numStr: "第61条", title: "条約の承認に関する衆議院の優越", text: "条約の締結に必要な国会の承認については、前条第二項の規定を準用する。", keywords: [{text:"条約の締結", group:"concept"}, {text:"国会の承認", group:"reason"}] },
+            { id: "art_62", chapter: "第4章 国会", numStr: "第62条", title: "国政調査権", text: "両議院は、各々国政に関する調査を行ひ、これに関して、証人の出頭及び証言並びに記録の提出を要求することができる。", keywords: [{text:"国政に関する調査", group:"concept"}, {text:"証人の出頭及び証言", group:"concept"}, {text:"記録の提出を要求", group:"action"}] },
+            { id: "art_63", chapter: "第4章 国会", numStr: "第63条", title: "閣僚の議院出席の権利義務", text: "内閣総理大臣その他の国務大臣は、両議院のうちいずれかに議席を有すると有しないとにかかはらず、いつでも議案について発言するため議院に出席することができる。又、答弁又は説明のため出席を求められたときは、出席しなければならない。", keywords: [{text:"国務大臣", group:"actor"}, {text:"いつでも議案について発言するため", group:"purpose"}, {text:"出席を求められたときは、出席しなければならない", group:"action"}] },
+            { id: "art_64", chapter: "第4章 国会", numStr: "第64条", title: "弾劾裁判所", text: "国会は、罷免の訴追を受けた裁判官を裁判するため、両議院の議員で組織する弾劾裁判所を設ける。二 弾劾裁判所の組織に関する事項は、法律でこれを定める。", keywords: [{text:"罷免の訴追を受けた裁判官", group:"actor"}, {text:"弾劾裁判所を設ける", group:"action"}] },
+
+            // --- 第5章 内閣 ---
+            { id: "art_65", chapter: "第5章 内閣", numStr: "第65条", title: "行政権の所属", text: "行政権は、内閣に属する。", keywords: [{text:"行政権は、内閣に属する", group:"concept"}] },
+            { id: "art_66", chapter: "第5章 内閣", numStr: "第66条", title: "内閣の組織・文民条項・連帯責任", text: "内閣は、首長たる内閣総理大臣及びその他の国務大臣でこれを組織する。二 内閣総理大臣その他の国務大臣は、文民でなければならない。三 内閣は、行政権の行使について、国会に対し連帯して責任を負ふ。", keywords: [{text:"内閣総理大臣", group:"actor"}, {text:"文民でなければならない", group:"condition"}, {text:"国会に対し連帯して責任を負ふ", group:"action"}] },
+            { id: "art_67", chapter: "第5章 内閣", numStr: "第67条", title: "内閣総理大臣の指名・衆議院の優越", text: "内閣総理大臣は、国会議員の中から国会の議決でこれを指名する。この指名は、他のすべての案件に先だつて、これを行ふ。二 衆議院と参議院とが異なつた指名の決議をした場合に、法律の定めるところにより、両議院の協議会を開いても意見が一致しないとき、又は衆議院が指名の決議をした後、国会休会中の期間を除いて十日以内に、参議院が、指名の決議をしないときは、衆議院の議決を国会の議決とする。", keywords: [{text:"国会議員の中から国会の議決で", group:"reason"}, {text:"両議院の協議会", group:"actor"}, {text:"十日以内に", group:"number"}, {text:"衆議院の議決を国会の議決とする", group:"action"}] },
+            { id: "art_68", chapter: "第5章 内閣", numStr: "第68条", title: "国務大臣の任命・罷免", text: "内閣総理大臣は、国務大臣を任命する。但し、その過半数は、国会議員の中から選ばれなければならない。二 内閣総理大臣は、任意に国務大臣を罷免することができる。", keywords: [{text:"国務大臣を任命", group:"action"}, {text:"過半数は、国会議員の中から", group:"number"}, {text:"任意に国務大臣を罷免", group:"action"}] },
+            { id: "art_69", chapter: "第5章 内閣", numStr: "第69条", title: "内閣不信任決議の効果", text: "内閣は、衆議院で不信任の決議案を可決し、又は信任の決議案を否決したときは、十日以内に衆議院が解散されない限り、総辞職をしなければならない。", keywords: [{text:"不信任の決議案を可決", group:"reason"}, {text:"十日以内に衆議院が解散されない限り", group:"number"}, {text:"総辞職をしなければならない", group:"action"}] },
+            { id: "art_70", chapter: "第5章 内閣", numStr: "第70条", title: "内閣総辞職（首相欠亡・国会召集）", text: "内閣総理大臣が欠けたとき、又は衆議院議員総選挙の後に初めて国会の召集があつたときは、内閣は、総辞職をしなければならない。", keywords: [{text:"内閣総理大臣が欠けたとき", group:"condition"}, {text:"初めて国会の召集があつたとき", group:"condition"}, {text:"総辞職", group:"action"}] },
+            { id: "art_71", chapter: "第5章 内閣", numStr: "第71条", title: "総辞職後の職務継続", text: "前二条の場合においては、内閣は、新たに内閣総理大臣が任命されるまで引き続いてその職務を行ふ。", keywords: [{text:"新たに内閣総理大臣が任命されるまで", group:"condition"}, {text:"引き続いてその職務を行ふ", group:"action"}] },
+            { id: "art_72", chapter: "第5章 内閣", numStr: "第72条", title: "内閣総理大臣の職能（指揮監督権）", text: "内閣総理大臣は、内閣を代表して議案を国会に提出し、一般国務及び外交関係について国会に報告し、並びに行政各部を指揮監督する。", keywords: [{text:"議案を国会に提出", group:"action"}, {text:"行政各部を指揮監督する", group:"action"}] },
+            { id: "art_73", chapter: "第5章 内閣", numStr: "第73条", title: "内閣の権限（一般行政・外交・政令）", text: "内閣は、他の一般行政事務のほか、左の事務を行ふ。一 法律を誠実に執行し、国務を総理すること。二 外交関係を処理すること。三 条約を締結すること。但し、事前に、時宜によつては事後に、国会の承認を経ることを必要とする。四 法律の定める基準に従ひ、官吏に関する事務を掌理すること。五 予算を作成して国会に提出すること。六 この憲法及び法律の規定を実施するために、政令を制定すること。但し、政令には、特にその法律の委任がある場合を除いては、罰則を設けることができない。七 赦免等を決定すること。", keywords: [{text:"条約を締結すること", group:"action"}, {text:"国会の承認", group:"reason"}, {text:"予算を作成して国会に提出", group:"action"}, {text:"政令を制定すること", group:"action"}] },
+            { id: "art_74", chapter: "第5章 内閣", numStr: "第74条", title: "署名・連署", text: "法律及び政令には、すべて主任の国務大臣が署名し、内閣総理大臣が連署することを必要とする。", keywords: [{text:"主任の国務大臣が署名", group:"action"}, {text:"内閣総理大臣が連署", group:"action"}] },
+            { id: "art_75", chapter: "第5章 内閣", numStr: "第75条", title: "国務大臣の特典（訴追の制限）", text: "国務大臣は、その在任中、内閣総理大臣の同意がなければ、訴追されない。但し、これがため、訴追の権利は、害されない。", keywords: [{text:"内閣総理大臣の同意がなければ、訴追されない", group:"reason"}] },
+
+            // --- 第6章 司法 ---
+            { id: "art_76", chapter: "第6章 司法", numStr: "第76条", title: "司法権の所属・特別裁判所禁止・裁判官の独立", text: "すべて司法権は、最高裁判所及び法律の定めるところにより設置される下級裁判所に属する。二 特別裁判所は、これを設置することができない。行政機関は、前審として裁判を行ふことができない。三 すべて裁判官は、その良心に従ひ独立してその職権を行ひ、この憲法及び法律にのみ拘束される。", keywords: [{text:"最高裁判所及び下級裁判所", group:"actor"}, {text:"特別裁判所は、これを設置することができない", group:"action"}, {text:"良心に従ひ独立して", group:"condition"}, {text:"憲法及び法律にのみ拘束される", group:"action"}] },
+            { id: "art_77", chapter: "第6章 司法", numStr: "第77条", title: "最高裁判所の規則制定権", text: "最高裁判所は、訴訟に関する手続、弁護士、裁判所の内部規律及び事務処理に関する事項について、規則を定める権限を有する。二 検察官は、最高裁判所の定める規則に従はなければならない。三 最高裁判所は、下級裁判所に関する規則を定める権限を、下級裁判所に委任することができる。", keywords: [{text:"最高裁判所", group:"actor"}, {text:"規則を定める権限", group:"concept"}] },
+            { id: "art_78", chapter: "第6章 司法", numStr: "第78条", title: "裁判官の身分保障", text: "裁判官は、裁判によつて分限の裁判を受けなければ、罷免されない。二 裁判官の行政機関による懲罰は、これを行ふことができない。", keywords: [{text:"分限の裁判を受けなければ、罷免されない", group:"reason"}, {text:"行政機関による懲罰は、これを行ふことができない", group:"action"}] },
+            { id: "art_79", chapter: "第6章 司法", numStr: "第79条", title: "最高裁判所裁判官の国民審査・定年・報酬", text: "最高裁判所は、その長たる裁判官及び法律の定める員のその他の裁判官でこれを構成し、その長たる裁判官以外の裁判官は、内閣でこれを任命する。二 最高裁判所の裁判官の任命は、その任命後初めて行はれる衆議院議員総選挙の際、国民の審査に付し、その後十年を経過した後初めて行はれる衆議院議員総選挙の際さらに審査に付し、その後も同様とする。三 投票者の多数が裁判官の罷免を可とするときは、その裁判官は、罷免される。四 審査に関する事項は、法律でこれを定める。五 最高裁判所の裁判官は、法律の定める年齢に達した時に退官する。六 最高裁判所の裁判官は、すべて定期に相当額の報酬を受ける。この報酬は、在任中、これを減額することができない。", keywords: [{text:"国民の審査", group:"concept"}, {text:"投票者の多数が裁判官の罷免を可とするとき", group:"reason"}, {text:"年齢に達した時に退官", group:"condition"}, {text:"在任中、これを減額することができない", group:"action"}] },
+            { id: "art_80", chapter: "第6章 司法", numStr: "第80条", title: "下級裁判所裁判官の任期・定年・報酬", text: "下級裁判所の裁判官は、最高裁判所の指名した者の名簿によつて、内閣でこれを任命する。その裁判官は、任期を十年とし、再任されることができる。但し、法律の定める年齢に達した時に退官する。二 下級裁判所の裁判官は、すべて定期に相当額の報酬を受ける。この報酬は、在任中、これを減額することができない。", keywords: [{text:"最高裁判所の指名した者の名簿", group:"reason"}, {text:"任期を十年とし", group:"number"}, {text:"減額することができない", group:"action"}] },
+            { id: "art_81", chapter: "第6章 司法", numStr: "第81条", title: "違憲審査権（憲法の番人）", text: "最高裁判所は、一切の法律、命令、規則又は処分が憲法に適合するかしないかを決定する権限を有する終審裁判所である。", keywords: [{text:"一切の法律、命令、規則又は処分", group:"concept"}, {text:"憲法に適合するかしないかを決定", group:"action"}, {text:"終審裁判所", group:"concept"}] },
+            { id: "art_82", chapter: "第6章 司法", numStr: "第82条", title: "裁判の公開原則", text: "裁判の対審及び判決は、公開法廷でこれを行ふ。二 裁判所が、裁判官の全員一致で、公の秩序又は善良の風俗を害するおそれがあると決議した場合には、対審は、公開しないでこれを行ふことができる。但し、政治犯罪、出版に関する犯罪又はこの憲法第三章で保障する国民の権利が問題となつてゐる事件の対審は、常にこれを公開しなければならない。", keywords: [{text:"公開法廷でこれを行ふ", group:"action"}, {text:"公の秩序又は善良の風俗", group:"concept"}, {text:"常にこれを公開しなければならない", group:"action"}] },
+
+            // --- 第7章 財政 ---
+            { id: "art_83", chapter: "第7章 財政", numStr: "第83条", title: "財政処理の基本原則（財政立憲主義）", text: "国の財政を処理する権限は、国会の議決に基いて、これを行使しなければならない。", keywords: [{text:"国の財政を処理する権限", group:"concept"}, {text:"国会の議決に基いて", group:"reason"}] },
+            { id: "art_84", chapter: "第7章 財政", numStr: "第84条", title: "租税法律主義", text: "あらたに税を課し、又は現行の税を変更するには、法律又は法律の定める条件によることを必要とする。", keywords: [{text:"あらたに税を課し", group:"action"}, {text:"法律又は法律の定める条件", group:"reason"}] },
+            { id: "art_85", chapter: "第7章 財政", numStr: "第85条", title: "国費の支出及び国の債務負担", text: "国費を支出し、又は国が債務を負担するには、国会の議決に基くことを必要とする。", keywords: [{text:"国費を支出し", group:"action"}, {text:"国が債務を負担", group:"action"}, {text:"国会の議決", group:"reason"}] },
+            { id: "art_86", chapter: "第7章 財政", numStr: "第86条", title: "予算の作成・審議", text: "内閣は、毎会計年度の予算を作成し、国会に提出して、その審議を受け議決を経なければならない。", keywords: [{text:"毎会計年度の予算を作成", group:"action"}, {text:"国会に提出", group:"action"}] },
+            { id: "art_87", chapter: "第7章 財政", numStr: "第87条", title: "予備費", text: "予見し難い予算の不足に充てるため、国会の議決に基いて予備費を設け、内閣の責任でこれを支出することができる。二 すべて予備費の支出について、内閣は、事後に国会の承諾を得なければならない。", keywords: [{text:"予備費", group:"concept"}, {text:"内閣の責任でこれを支出", group:"action"}, {text:"事後に国会の承諾", group:"reason"}] },
+            { id: "art_88", chapter: "第7章 財政", numStr: "第88条", title: "皇室経費", text: "すべて皇室財産は、国に属する。すべて皇室の費用は、予算に計上して国会の議決を経なければならない。", keywords: [{text:"皇室財産は、国に属する", group:"concept"}, {text:"予算に計上して国会の議決", group:"reason"}] },
+            { id: "art_89", chapter: "第7章 財政", numStr: "第89条", title: "公金の支出等の制限（私的宗教・慈善事業への禁止）", text: "公金その他の公の財産は、宗教上の組織若しくは企業の利用、扶助若しくは維持のため、又は公の支配に属しない慈善、教育若しくは博愛の事業に対して、これを支出し、又はその利用に供してはならない。", keywords: [{text:"宗教上の組織", group:"actor"}, {text:"公の支配に属しない", group:"condition"}, {text:"これを支出し、又はその利用に供してはならない", group:"action"}] },
+            { id: "art_90", chapter: "第7章 財政", numStr: "第90条", title: "決算審査・会計検査院", text: "国の収入支出の決算は、すべて毎年会計検査院がこれを検査し、内閣は、次の年度に、この検査報告とともに、決算を国会に提出しなければならない。二 会計検査院の組織及び権限は、法律でこれを定める。", keywords: [{text:"収入支出の決算", group:"concept"}, {text:"会計検査院がこれを検査", group:"action"}, {text:"国会に提出", group:"action"}] },
+            { id: "art_91", chapter: "第7章 財政", numStr: "第91条", title: "財政状況の報告", text: "内閣は、国会及び国民に対し、定期に、少なくとも毎年一回国の財政状況について報告しなければならない。", keywords: [{text:"少なくとも毎年一回", group:"number"}, {text:"財政状況について報告", group:"action"}] },
+
+            // --- 第8章 地方自治 ---
+            { id: "art_92", chapter: "第8章 地方自治", numStr: "第92条", title: "地方自治の基本原則", text: "地方公共団体の組織及び運営に関する事項は、地方自治の本旨に基いて、法律でこれを定める。", keywords: [{text:"地方公共団体", group:"actor"}, {text:"地方自治の本旨", group:"concept"}, {text:"法律でこれを定める", group:"reason"}] },
+            { id: "art_93", chapter: "第8章 地方自治", numStr: "第93条", title: "地方議会と直接選挙", text: "地方公共団体には、法律の定めるところにより、議事機関として議会を設置する。二 地方公共団体の長、その議会の議員及び法律の定めるその他の公務員は、その地方公共団体の住民が、直接これを選挙する。", keywords: [{text:"議会を設置する", group:"action"}, {text:"住民が、直接これを選挙する", group:"action"}] },
+            { id: "art_94", chapter: "第8章 地方自治", numStr: "第94条", title: "地方公共団体の権能（条例制定権）", text: "地方公共団体は、その財産を管理し、事務を処理し、及び行政を執行する権能を有し、法律の範囲内で条例を制定することができる。", keywords: [{text:"財産を管理", group:"action"}, {text:"法律の範囲内で条例を制定", group:"action"}] },
+            { id: "art_95", chapter: "第8章 地方自治", numStr: "第95条", title: "特別法の住民投票", text: "一の地方公共団体のみに適用される特別法は、法律の定めるところにより、その地方公共団体の住民の投票においてその過半数の同意を得なければ、国会は、これを制定することができない。", keywords: [{text:"一の地方公共団体のみに適用される特別法", group:"concept"}, {text:"住民の投票においてその過半数の同意", group:"reason"}] },
+
+            // --- 第9章 改正 ---
+            { id: "art_96", chapter: "第9章 改正", numStr: "第96条", title: "憲法改正の手続（発議と国民投票）", text: "この憲法の改正は、各議院の総議員の三分の二以上の賛成で、国会が、これを発議し、国民に提案してその承認を経なければならない。この承認には、特別の国民投票又は国会の定める選挙の際行はれる投票において、その過半数の賛成を必要とする。二 憲法改正について前項の承認を経たときは、天皇は、国民の名で、この憲法と一体を成するものとして、直ちにこれを公布する。", keywords: [{text:"総議員の三分の二以上", group:"number"}, {text:"国会が、これを発議", group:"action"}, {text:"特別の国民投票", group:"concept"}, {text:"過半数の賛成", group:"number"}, {text:"天皇は、国民の名で", group:"actor"}] },
+
+            // --- 第10章 最高法規 ---
+            { id: "art_97", chapter: "第10章 最高法規", numStr: "第97条", title: "基本的人権の本質（永久不可侵性）", text: "この憲法が日本国民に保障する基本的人権は、人類の多年にわたる自由獲得の努力の成果であつて、これらの権利は、過去幾多の試練に堪へ、現在及び将来の国民に対し、侵すことのできない永久の権利として信託されたものである。", keywords: [{text:"人類の多年にわたる自由獲得の努力の成果", group:"concept"}, {text:"侵すことのできない永久の権利", group:"concept"}] },
+            { id: "art_98", chapter: "第10章 最高法規", numStr: "第98条", title: "最高法規性・条約及び国際法規の遵守", text: "この憲法は、国の最高法規であつて、その条規に反する法律、命令、詔勅及び国務に関するその他の行為の全部又は一部は、その効力を有しない。二 日本国が締結した条約及び確立された国際法規は、これを誠実に遵守することを必要とする。", keywords: [{text:"最高法規", group:"concept"}, {text:"効力を有しない", group:"action"}, {text:"条約及び確立された国際法規", group:"concept"}, {text:"誠実に遵守", group:"action"}] },
+            { id: "art_99", chapter: "第10章 最高法規", numStr: "第99条", title: "憲法尊重擁護の義務", text: "天皇又は摂政及び国務大臣、国会議員、裁判官その他の公務員は、この憲法を尊重し擁護する義務を負ふ。", keywords: [{text:"天皇又は摂政", group:"actor"}, {text:"国務大臣、国会議員、裁判官その他の公務員", group:"actor"}, {text:"尊重し擁護する義務を負ふ", group:"action"}] },
+
+            // --- 第11章 補則 ---
+            { id: "art_100", chapter: "第11章 補則", numStr: "第100条", title: "施行期日と準備", text: "この憲法は、公布の日から起算して六箇月を適過した日から、これを施行する。二 この憲法を施行するために必要な法律の制定、参議院議員の選挙及び国会召集の手続並びにこの憲法を施行するために必要な準備手続は、前項の期日前に、これを行ふことができる。", keywords: [{text:"六箇月を適過した日から", group:"number"}, {text:"これを施行する", group:"action"}] },
+            { id: "art_101", chapter: "第11章 補則", numStr: "第101条", title: "経過措置（貴族院の存続期間）", text: "この憲法施行の際、参議院がまだ成立してゐないときは、その成立するまでの間、帝国議会貴族院は、衆議院とともに国会としての職権を行ふ。", keywords: [{text:"帝国議会貴族院", group:"actor"}, {text:"職権を行ふ", group:"action"}] },
+            { id: "art_102", chapter: "第11章 補則", numStr: "第102条", title: "経過措置（第一期参議院議員の任期）", text: "この憲法による第一期の参議院議員のうち、その半数の者の任期は、第四十六条の規定にかかはらず、三年とする。その半数の者を誰とするかは、法律でこれを定める。", keywords: [{text:"第一期の参議院議員", group:"actor"}, {text:"半数の者の任期は三年とする", group:"number"}] },
+            { id: "art_103", chapter: "第11章 補則", numStr: "第103条", title: "経過措置（現職公務員の地位）", text: "この憲法が施行される際、現に在職する国務大臣、衆議院議員及び裁判官その他の公務員で、その地位に相当する地位がこの憲法で認められてゐるものは、法律で特別の定めをした場合を除いては、この憲法施行のため、当然にはその地位を失ふことはない。但し、この憲法によつて、後任者が選挙又は任命されたときは、当然その地位を失ふ。", keywords: [{text:"現に在職する", group:"condition"}, {text:"当然にはその地位を失ふことはない", group:"action"}] }
+        ];
+
+        // アプリケーション全体状態
+        let appState = {
+            selectedScopeIds: new Set(CONSTITUTION_ALL.map(item => item.id)),
+            stats: {
+                totalAnswered: 0,
+                totalCorrect: 0,
+                itemStats: {}
+            },
+            quizConfig: {
+                mode: 'mix', // 'mix', 'blank', 'number', 'focus'
+                blankAnswerStyle: 'choice', // 'choice' (選択式) または 'input' (記述式)
+                limit: 10,
+                focusItemId: "art_25"
+            },
+            currentQuizQueue: [],
+            currentQuestionIndex: 0,
+            currentQuestion: null,
+            userAnswers: {},
+            activeBlankIndex: 0
+        };
+
+        const STORAGE_SCOPE_KEY = 'kenpou_selected_scope_v2';
+        const STORAGE_STATS_KEY = 'kenpou_user_stats_v2';
+
+        // 初期ロード処理
+        window.addEventListener('DOMContentLoaded', () => {
+            loadScopeSetting();
+            loadStats();
+            initFocusSelectOptions();
+            renderScopeSettingsUI();
+            updateHeaderScopeBadge();
+            renderDictionary();
+            renderAnalyticsData();
+        });
+
+        function loadScopeSetting() {
+            try {
+                const saved = localStorage.getItem(STORAGE_SCOPE_KEY);
+                if (saved) {
+                    const ids = JSON.parse(saved);
+                    if (Array.isArray(ids) && ids.length > 0) {
+                        appState.selectedScopeIds = new Set(ids);
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function saveScopeSetting() {
+            try {
+                const arr = Array.from(appState.selectedScopeIds);
+                localStorage.setItem(STORAGE_SCOPE_KEY, JSON.stringify(arr));
+            } catch (e) { console.error(e); }
+            updateHeaderScopeBadge();
+        }
+
+        function loadStats() {
+            try {
+                const saved = localStorage.getItem(STORAGE_STATS_KEY);
+                if (saved) {
+                    appState.stats = JSON.parse(saved);
+                } else {
+                    initDefaultStats();
+                }
+            } catch (e) { initDefaultStats(); }
+        }
+
+        function initDefaultStats() {
+            appState.stats = { totalAnswered: 0, totalCorrect: 0, itemStats: {} };
+            CONSTITUTION_ALL.forEach(item => {
+                appState.stats.itemStats[item.id] = { answered: 0, correct: 0 };
+            });
+            saveStats();
+        }
+
+        function saveStats() {
+            try {
+                localStorage.setItem(STORAGE_STATS_KEY, JSON.stringify(appState.stats));
+            } catch (e) { console.error(e); }
+        }
+
+        function updateHeaderScopeBadge() {
+            const count = appState.selectedScopeIds.size;
+            document.getElementById('header-scope-count').innerText = count;
+            const summaryText = document.getElementById('setup-scope-summary-text');
+            if (summaryText) {
+                summaryText.innerText = `${count} / 111 項目 (${count === 111 ? '全選択中' : 'カスタム選択中'})`;
+            }
+        }
+
+        // UI描画 & 操作
+        function renderScopeSettingsUI() {
+            const container = document.getElementById('scope-chapters-container');
+            container.innerHTML = '';
+
+            const chapterMap = {};
+            CONSTITUTION_ALL.forEach(item => {
+                if (!chapterMap[item.chapter]) chapterMap[item.chapter] = [];
+                chapterMap[item.chapter].push(item);
+            });
+
+            Object.keys(chapterMap).forEach(chName => {
+                const items = chapterMap[chName];
+                const section = document.createElement('div');
+                section.className = 'chapter-scope-box bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3';
+                section.setAttribute('data-chapter-name', chName);
+
+                const allChSelected = items.every(it => appState.selectedScopeIds.has(it.id));
+
+                let chipsHtml = items.map(it => {
+                    const isSel = appState.selectedScopeIds.has(it.id);
+                    return `<button type="button" id="chip-${it.id}" onclick="toggleScopeItem('${it.id}')" data-item-id="${it.id}" data-search-text="${it.numStr} ${it.title}" class="chip-toggle px-3 py-1.5 rounded-lg text-xs font-bold border ${isSel ? 'selected' : 'unselected'} flex items-center gap-1">
+                        <span>${it.numStr}</span>
+                        <span class="text-[10px] opacity-80">(${it.title.substring(0, 8)}${it.title.length > 8 ? '…' : ''})</span>
+                    </button>`;
+                }).join('');
+
+                section.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                        <div class="font-serif font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+                            <span>${chName}</span>
+                            <span class="text-xs text-slate-400 font-sans font-normal">(${items.length}項目)</span>
+                        </div>
+                        <button onclick="toggleChapterScope('${chName}', ${!allChSelected})" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-white px-2.5 py-1 rounded border border-slate-200 shadow-sm transition">
+                            ${allChSelected ? 'この章を解除' : 'この章を全選択'}
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-2 pt-1">
+                        ${chipsHtml}
+                    </div>
+                `;
+                container.appendChild(section);
+            });
+
+            updateScopeTotalCounter();
+        }
+
+        function toggleScopeItem(id) {
+            playSound('click');
+            if (appState.selectedScopeIds.has(id)) {
+                if (appState.selectedScopeIds.size <= 1) {
+                    alert('最低1つの項目を出題範囲として選択してください。');
+                    return;
+                }
+                appState.selectedScopeIds.delete(id);
+            } else {
+                appState.selectedScopeIds.add(id);
+            }
+
+            const chip = document.getElementById(`chip-${id}`);
+            if (chip) {
+                if (appState.selectedScopeIds.has(id)) {
+                    chip.className = 'chip-toggle px-3 py-1.5 rounded-lg text-xs font-bold border selected flex items-center gap-1';
+                } else {
+                    chip.className = 'chip-toggle px-3 py-1.5 rounded-lg text-xs font-bold border unselected flex items-center gap-1';
+                }
+            }
+
+            saveScopeSetting();
+            updateScopeTotalCounter();
+        }
+
+        function toggleChapterScope(chapterName, selectAll) {
+            playSound('click');
+            const items = CONSTITUTION_ALL.filter(it => it.chapter === chapterName);
+            items.forEach(it => {
+                if (selectAll) {
+                    appState.selectedScopeIds.add(it.id);
+                } else {
+                    if (appState.selectedScopeIds.size > 1) {
+                        appState.selectedScopeIds.delete(it.id);
+                    }
+                }
+            });
+            saveScopeSetting();
+            renderScopeSettingsUI();
+        }
+
+        function selectAllScope(selectAll) {
+            playSound('click');
+            if (selectAll) {
+                appState.selectedScopeIds = new Set(CONSTITUTION_ALL.map(it => it.id));
+            } else {
+                appState.selectedScopeIds = new Set(["art_25"]);
+            }
+            saveScopeSetting();
+            renderScopeSettingsUI();
+        }
+
+        function selectPresetScope(preset) {
+            playSound('click');
+            appState.selectedScopeIds.clear();
+
+            CONSTITUTION_ALL.forEach(it => {
+                if (preset === 'preamble' && it.chapter === '前文') {
+                    appState.selectedScopeIds.add(it.id);
+                } else if (preset === 'human_rights' && it.chapter === '第3章 国民の権利及び義務') {
+                    appState.selectedScopeIds.add(it.id);
+                } else if (preset === 'governance' && ['第4章 国会', '第5章 内閣', '第6章 司法', '第7章 財政', '第8章 地方自治'].includes(it.chapter)) {
+                    appState.selectedScopeIds.add(it.id);
+                }
+            });
+
+            if (appState.selectedScopeIds.size === 0) {
+                appState.selectedScopeIds.add("art_25");
+            }
+            saveScopeSetting();
+            renderScopeSettingsUI();
+        }
+
+        function updateScopeTotalCounter() {
+            const el = document.getElementById('scope-total-selected');
+            if (el) el.innerText = appState.selectedScopeIds.size;
+        }
+
+        function filterScopeItems() {
+            const query = document.getElementById('scope-search-input').value.toLowerCase().trim();
+            document.querySelectorAll('.chip-toggle').forEach(chip => {
+                const text = chip.getAttribute('data-search-text').toLowerCase();
+                if (text.includes(query)) {
+                    chip.classList.remove('hidden');
+                } else {
+                    chip.classList.add('hidden');
+                }
+            });
+        }
+
+        function switchTab(tabName) {
+            playSound('click');
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('border-amber-500', 'text-amber-400', 'font-bold');
+                btn.classList.add('border-transparent', 'text-slate-400');
+            });
+            const activeNav = document.getElementById(`tab-btn-${tabName}`);
+            if (activeNav) {
+                activeNav.classList.add('border-amber-500', 'text-amber-400', 'font-bold');
+                activeNav.classList.remove('border-transparent', 'text-slate-400');
+            }
+
+            document.getElementById('section-quiz').classList.add('hidden');
+            document.getElementById('section-scope').classList.add('hidden');
+            document.getElementById('section-dictionary').classList.add('hidden');
+            document.getElementById('section-analytics').classList.add('hidden');
+
+            document.getElementById(`section-${tabName}`).classList.remove('hidden');
+
+            if (tabName === 'scope') {
+                renderScopeSettingsUI();
+            } else if (tabName === 'analytics') {
+                renderAnalyticsData();
+            }
+        }
+
+        function setQuestionLimit(limit) {
+            playSound('click');
+            appState.quizConfig.limit = limit;
+            document.querySelectorAll('.limit-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-900', 'text-white');
+                btn.classList.add('bg-white', 'text-slate-800');
+            });
+            event.currentTarget.classList.add('bg-slate-900', 'text-white');
+            event.currentTarget.classList.remove('bg-white');
+        }
+
+        function toggleFocusArticleSelect() {
+            const wrapper = document.getElementById('focus-article-wrapper');
+            const focusRadio = document.querySelector('input[name="quiz-mode"][value="focus"]');
+            if (focusRadio && focusRadio.checked) {
+                wrapper.classList.remove('hidden');
+            } else {
+                wrapper.classList.add('hidden');
+            }
+        }
+
+        function initFocusSelectOptions() {
+            const select = document.getElementById('focus-article-select');
+            if (!select) return;
+            select.innerHTML = '';
+            CONSTITUTION_ALL.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.id;
+                opt.innerText = `${item.numStr} : ${item.title}`;
+                select.appendChild(opt);
+            });
+        }
+
+        // ================= クイズ生成エンジン =================
+        function startQuiz() {
+            playSound('click');
+            const selectedMode = document.querySelector('input[name="quiz-mode"]:checked').value;
+            appState.quizConfig.mode = selectedMode;
+
+            // 穴埋め解答方式(選択式/記述式)の取得
+            const answerStyleRadio = document.querySelector('input[name="blank-answer-style"]:checked');
+            appState.quizConfig.blankAnswerStyle = answerStyleRadio ? answerStyleRadio.value : 'choice';
+
+            if (selectedMode === 'focus') {
+                appState.quizConfig.focusItemId = document.getElementById('focus-article-select').value;
+            }
+
+            const selectedPool = CONSTITUTION_ALL.filter(it => appState.selectedScopeIds.has(it.id));
+
+            if (selectedPool.length === 0) {
+                alert('出題範囲が何も選択されていません。出題範囲設定画面で少なくとも1つ選択してください。');
+                switchTab('scope');
+                return;
+            }
+
+            appState.currentQuizQueue = generateQuizQueue(selectedPool, appState.quizConfig);
+            appState.currentQuestionIndex = 0;
+
+            document.getElementById('quiz-setup-view').classList.add('hidden');
+            document.getElementById('quiz-result-view').classList.add('hidden');
+            document.getElementById('quiz-active-view').classList.remove('hidden');
+
+            renderCurrentQuestion();
+        }
+
+        function generateQuizQueue(pool, config) {
+            const queue = [];
+
+            if (config.mode === 'focus') {
+                const focusItem = CONSTITUTION_ALL.find(it => it.id === config.focusItemId) || pool[0];
+                const count = config.limit > 0 ? config.limit : 10;
+                for (let i = 0; i < count; i++) {
+                    const qType = Math.random() < 0.7 ? 'blank' : 'number';
+                    queue.push(createSingleQuestion(focusItem, qType, pool));
+                }
+                return queue;
+            }
+
+            let shuffled = [...pool];
+            shuffleArray(shuffled);
+
+            const count = (config.limit > 0) ? Math.min(config.limit, shuffled.length * 3) : shuffled.length;
+
+            for (let i = 0; i < count; i++) {
+                const item = shuffled[i % shuffled.length];
+                let type = config.mode;
+                if (config.mode === 'mix') {
+                    type = Math.random() < 0.65 ? 'blank' : 'number';
+                }
+                queue.push(createSingleQuestion(item, type, pool));
+            }
+            return queue;
+        }
+
+        // 単一問題の作成 (同グループのダミー抽出処理)
+        function createSingleQuestion(item, type, pool) {
+            if (type === 'blank') {
+                const kws = [...item.keywords];
+                shuffleArray(kws);
+                const blankCount = Math.min(kws.length, Math.floor(Math.random() * 2) + 1);
+                const targetKwObjs = kws.slice(0, blankCount);
+
+                // 出現順に整列
+                targetKwObjs.sort((a, b) => item.text.indexOf(a.text) - item.text.indexOf(b.text));
+
+                let questionText = item.text;
+                let answerMap = {};
+
+                targetKwObjs.forEach((kwObj, idx) => {
+                    answerMap[idx] = kwObj.text;
+                    const symbol = `〔${getCircledNumber(idx + 1)}〕`;
+                    questionText = questionText.replaceAll(kwObj.text, symbol);
+                });
+
+                return {
+                    type: 'blank',
+                    item: item,
+                    displayText: questionText,
+                    targetKwObjs: targetKwObjs,
+                    answerMap: answerMap
+                };
+            } else {
+                const correctStr = item.numStr;
+                const otherItems = pool.filter(it => it.id !== item.id);
+                shuffleArray(otherItems);
+                
+                const choices = [correctStr];
+                otherItems.slice(0, 3).forEach(it => choices.push(it.numStr));
+                shuffleArray(choices);
+
+                return {
+                    type: 'number',
+                    item: item,
+                    displayText: item.text,
+                    correctStr: correctStr,
+                    choices: choices
+                };
+            }
+        }
+
+        // クイズ質問の描画
+        function renderCurrentQuestion() {
+            const q = appState.currentQuizQueue[appState.currentQuestionIndex];
+            appState.currentQuestion = q;
+            appState.userAnswers = {};
+            appState.activeBlankIndex = 0;
+
+            const currentNum = appState.currentQuestionIndex + 1;
+            const totalNum = appState.currentQuizQueue.length;
+            document.getElementById('quiz-progress-text').innerText = `第 ${currentNum} 問 / 全 ${totalNum} 問`;
+            document.getElementById('quiz-progress-bar').style.width = `${(currentNum / totalNum) * 100}%`;
+
+            const badge = document.getElementById('quiz-badge-type');
+            if (q.type === 'blank') {
+                const styleName = appState.quizConfig.blankAnswerStyle === 'input' ? '記述式' : '選択式';
+                badge.innerText = `穴埋めドリル (${styleName})`;
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold text-[11px]';
+            } else {
+                badge.innerText = 'これ、第何条？';
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-semibold text-[11px]';
+            }
+
+            document.getElementById('btn-submit-answer').classList.remove('hidden');
+            document.getElementById('quiz-feedback-box').classList.add('hidden');
+
+            const headline = document.getElementById('quiz-headline');
+            const qBody = document.getElementById('quiz-question-body');
+            const blankArea = document.getElementById('blank-interactive-area');
+            const choiceArea = document.getElementById('choice-interactive-area');
+
+            if (q.type === 'blank') {
+                headline.innerHTML = `<span class="px-2 py-0.5 bg-amber-100 text-amber-900 rounded font-bold text-xs">${q.item.numStr} ${q.item.title}</span> <span>空欄〔 〕に入る適切な語句を入力・選択してください</span>`;
+
+                let formattedText = q.displayText;
+                q.targetKwObjs.forEach((_, idx) => {
+                    const symbol = `〔${getCircledNumber(idx + 1)}〕`;
+                    const slotHtml = `<span id="blank-slot-${idx}" onclick="selectBlankSlot(${idx})" class="blank-slot ${idx === 0 ? 'active' : ''}">${symbol}</span>`;
+                    formattedText = formattedText.replace(symbol, slotHtml);
+                });
+
+                qBody.innerHTML = formattedText;
+                blankArea.classList.remove('hidden');
+                choiceArea.classList.add('hidden');
+
+                if (appState.quizConfig.blankAnswerStyle === 'choice') {
+                    document.getElementById('blank-choice-container').classList.remove('hidden');
+                    document.getElementById('blank-input-container').classList.add('hidden');
+                    renderBlankGroupOptions();
+                } else {
+                    document.getElementById('blank-choice-container').classList.add('hidden');
+                    document.getElementById('blank-input-container').classList.remove('hidden');
+                    focusBlankInputField();
+                }
+            } else {
+                headline.innerHTML = `<i class="fa-solid fa-circle-question text-indigo-600"></i> <span>以下の条文（または前文）はどれに該当するでしょうか？</span>`;
+                qBody.innerHTML = `「${q.displayText}」`;
+
+                blankArea.classList.add('hidden');
+                choiceArea.classList.remove('hidden');
+
+                renderChoiceButtons();
+            }
+        }
+
+        // 同グループの選択肢（正解＋同じグループの錯乱語句）を表示するコアアルゴリズム
+        function renderBlankGroupOptions() {
+            const container = document.getElementById('blank-options-container');
+            container.innerHTML = '';
+
+            const q = appState.currentQuestion;
+            const activeIdx = appState.activeBlankIndex;
+            const targetKwObj = q.targetKwObjs[activeIdx];
+
+            if (!targetKwObj) return;
+
+            // ガイダンスラベル更新
+            const groupName = GROUP_LABELS[targetKwObj.group] || "【類似グループ】";
+            document.getElementById('group-guidance-text').innerHTML = `<i class="fa-solid fa-layer-group text-indigo-600 mr-1"></i> 空欄〔${getCircledNumber(activeIdx + 1)}〕の選択肢 : <span class="font-bold text-indigo-900">${groupName}</span> から選択`;
+
+            // 同一グループのキーフレーズを全データから収集
+            const sameGroupSet = new Set();
+            CONSTITUTION_ALL.forEach(item => {
+                item.keywords.forEach(kw => {
+                    if (kw.group === targetKwObj.group && kw.text !== targetKwObj.text) {
+                        sameGroupSet.add(kw.text);
+                    }
+                });
+            });
+
+            const sameGroupDummies = Array.from(sameGroupSet);
+            shuffleArray(sameGroupDummies);
+
+            // ダミー3個＋正解1個＝4択
+            const selectedDummies = sameGroupDummies.slice(0, 3);
+            const options = [targetKwObj.text, ...selectedDummies];
+            shuffleArray(options);
+
+            options.forEach(optText => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'px-3.5 py-2 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 border border-slate-200 rounded-lg text-xs sm:text-sm font-bold text-slate-800 transition active:scale-95 shadow-sm';
+                btn.innerText = optText;
+                btn.onclick = () => fillActiveBlank(optText);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectBlankSlot(index) {
+            playSound('click');
+            appState.activeBlankIndex = index;
+            const q = appState.currentQuestion;
+            q.targetKwObjs.forEach((_, i) => {
+                const slot = document.getElementById(`blank-slot-${i}`);
+                if (slot) {
+                    if (i === index) slot.classList.add('active');
+                    else slot.classList.remove('active');
+                }
+            });
+
+            if (appState.quizConfig.blankAnswerStyle === 'choice') {
+                renderBlankGroupOptions();
+            } else {
+                focusBlankInputField();
+            }
+        }
+
+        function fillActiveBlank(text) {
+            playSound('click');
+            const q = appState.currentQuestion;
+            const idx = appState.activeBlankIndex;
+
+            appState.userAnswers[idx] = text;
+
+            const slot = document.getElementById(`blank-slot-${idx}`);
+            if (slot) {
+                slot.innerText = text;
+                slot.classList.add('filled');
+            }
+
+            let nextIdx = -1;
+            for (let i = 0; i < q.targetKwObjs.length; i++) {
+                if (!appState.userAnswers[i]) {
+                    nextIdx = i;
+                    break;
+                }
+            }
+
+            if (nextIdx !== -1) {
+                selectBlankSlot(nextIdx);
+            }
+        }
+
+        // 記述式タイピングの処理
+        function focusBlankInputField() {
+            const input = document.getElementById('blank-text-input');
+            const activeIdx = appState.activeBlankIndex;
+            input.value = appState.userAnswers[activeIdx] || '';
+            input.placeholder = `〔${getCircledNumber(activeIdx + 1)}〕に入る語句を入力...`;
+            input.focus();
+        }
+
+        function submitBlankInputText() {
+            const input = document.getElementById('blank-text-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            fillActiveBlank(text);
+        }
+
+        function clearAllBlanks() {
+            playSound('click');
+            const q = appState.currentQuestion;
+            appState.userAnswers = {};
+            q.targetKwObjs.forEach((_, idx) => {
+                const slot = document.getElementById(`blank-slot-${idx}`);
+                if (slot) {
+                    slot.innerText = `〔${getCircledNumber(idx + 1)}〕`;
+                    slot.classList.remove('filled', 'correct-highlight', 'wrong-highlight');
+                }
+            });
+            selectBlankSlot(0);
+        }
+
+        function renderChoiceButtons() {
+            const container = document.getElementById('choice-interactive-area');
+            container.innerHTML = '';
+
+            const q = appState.currentQuestion;
+            q.choices.forEach(numStr => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'choice-btn p-3.5 bg-slate-50 hover:bg-indigo-50 border-2 border-slate-200 hover:border-indigo-400 rounded-xl font-bold text-slate-800 transition active:scale-95 text-sm sm:text-base shadow-sm flex items-center justify-center gap-1';
+                btn.innerHTML = `<span class="font-serif font-bold text-indigo-900">${numStr}</span>`;
+                btn.onclick = () => selectChoiceNo(btn, numStr);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectChoiceNo(btnElement, numStr) {
+            playSound('click');
+            document.querySelectorAll('.choice-btn').forEach(b => {
+                b.classList.remove('bg-indigo-100', 'border-indigo-600', 'text-indigo-900');
+                b.classList.add('bg-slate-50', 'border-slate-200');
+            });
+            btnElement.classList.add('bg-indigo-100', 'border-indigo-600', 'text-indigo-900');
+            btnElement.classList.remove('bg-slate-50', 'border-slate-200');
+
+            appState.userAnswers['numStr'] = numStr;
+        }
+
+        function submitAnswer() {
+            const q = appState.currentQuestion;
+            let isCorrect = false;
+
+            if (q.type === 'blank') {
+                const allFilled = q.targetKwObjs.every((_, idx) => appState.userAnswers[idx]);
+                if (!allFilled) {
+                    alert('すべての空欄に語句を入力・セットしてください。');
+                    return;
+                }
+
+                // 表記の揺れや前後の空白を除去して判定
+                isCorrect = q.targetKwObjs.every((targetKw, idx) => {
+                    const userVal = (appState.userAnswers[idx] || '').trim().replace(/\s+/g, '');
+                    const targetVal = targetKw.text.trim().replace(/\s+/g, '');
+                    return userVal === targetVal;
+                });
+
+                q.targetKwObjs.forEach((targetKw, idx) => {
+                    const slot = document.getElementById(`blank-slot-${idx}`);
+                    const userVal = (appState.userAnswers[idx] || '').trim().replace(/\s+/g, '');
+                    const targetVal = targetKw.text.trim().replace(/\s+/g, '');
+                    if (slot) {
+                        if (userVal === targetVal) {
+                            slot.classList.add('correct-highlight');
+                        } else {
+                            slot.classList.add('wrong-highlight');
+                        }
+                    }
+                });
+
+            } else {
+                if (!appState.userAnswers['numStr']) {
+                    alert('該当する条数・前文番号を選択してください。');
+                    return;
+                }
+                isCorrect = (appState.userAnswers['numStr'] === q.correctStr);
+            }
+
+            if (isCorrect) playSound('correct');
+            else playSound('wrong');
+
+            recordQuestionResult(q.item.id, isCorrect);
+            showFeedback(isCorrect, q);
+        }
+
+        function recordQuestionResult(itemId, isCorrect) {
+            appState.stats.totalAnswered += 1;
+            if (isCorrect) appState.stats.totalCorrect += 1;
+
+            if (!appState.stats.itemStats[itemId]) {
+                appState.stats.itemStats[itemId] = { answered: 0, correct: 0 };
+            }
+            appState.stats.itemStats[itemId].answered += 1;
+            if (isCorrect) appState.stats.itemStats[itemId].correct += 1;
+
+            saveStats();
+        }
+
+        function showFeedback(isCorrect, q) {
+            document.getElementById('btn-submit-answer').classList.add('hidden');
+            const box = document.getElementById('quiz-feedback-box');
+            box.classList.remove('hidden');
+
+            const icon = document.getElementById('feedback-icon');
+            const title = document.getElementById('feedback-title');
+            const detail = document.getElementById('feedback-detail');
+
+            if (isCorrect) {
+                box.className = 'p-4 sm:p-5 rounded-xl border-2 border-emerald-300 bg-emerald-50/90 text-emerald-950 animate-fade-in space-y-3';
+                icon.innerHTML = '🎉';
+                title.innerText = '正解です！見事な暗記力です！';
+            } else {
+                box.className = 'p-4 sm:p-5 rounded-xl border-2 border-rose-300 bg-rose-50/90 text-rose-950 animate-fade-in space-y-3';
+                icon.innerHTML = '❌';
+                title.innerText = '残念、不正解です...';
+            }
+
+            if (q.type === 'blank') {
+                let ansText = q.targetKwObjs.map((kw, i) => `〔${getCircledNumber(i + 1)}〕 <span class="font-bold underline">${kw.text}</span>`).join(' &nbsp; ');
+                detail.innerHTML = `正解の語句: ${ansText}`;
+            } else {
+                detail.innerHTML = `正解: <span class="font-bold text-base underline">${q.correctStr}</span> (${q.item.title})`;
+            }
+
+            document.getElementById('feedback-full-text').innerText = q.item.text;
+
+            const tagsHtml = q.item.keywords.map(kw => `<span class="px-2 py-0.5 bg-amber-100 text-amber-900 text-[11px] font-bold rounded">#${kw.text}</span>`).join(' ');
+            document.getElementById('feedback-keywords-tags').innerHTML = tagsHtml;
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            appState.currentQuestionIndex += 1;
+            if (appState.currentQuestionIndex < appState.currentQuizQueue.length) {
+                renderCurrentQuestion();
+            } else {
+                showQuizResultSummary();
+            }
+        }
+
+        function showQuizResultSummary() {
+            document.getElementById('quiz-active-view').classList.add('hidden');
+            document.getElementById('quiz-result-view').classList.remove('hidden');
+
+            const total = appState.currentQuizQueue.length;
+            const rate = Math.round((appState.stats.totalCorrect / Math.max(1, appState.stats.totalAnswered)) * 100);
+
+            document.getElementById('result-score').innerText = `${appState.stats.totalCorrect} / ${appState.stats.totalAnswered} 正解`;
+            document.getElementById('result-rate').innerText = `${rate}%`;
+
+            const msg = document.getElementById('result-evaluation-msg');
+            if (rate >= 80) {
+                msg.innerText = '🏆 素晴らしい！全憲法の定着がかなり進んでいます！';
+            } else if (rate >= 50) {
+                msg.innerText = '👍 着実に記憶に定着しています！苦手な章を絞って復習しましょう。';
+            } else {
+                msg.innerText = '📚 繰り返し練習することで確実に覚えられます。何度もトライしましょう！';
+            }
+        }
+
+        function restartQuiz() {
+            playSound('click');
+            document.getElementById('quiz-result-view').classList.add('hidden');
+            document.getElementById('quiz-setup-view').classList.remove('hidden');
+        }
+
+        function confirmExitQuiz() {
+            if (confirm('クイズを途中で終了して設定画面に戻りますか？')) {
+                restartQuiz();
+            }
+        }
+
+        // ================= 全条文辞書機能 =================
+        function renderDictionary() {
+            const container = document.getElementById('dict-cards-container');
+            container.innerHTML = '';
+
+            const filterContainer = document.getElementById('dict-chapter-filter');
+            if (filterContainer.children.length === 0) {
+                const chapters = ["すべて", ...new Set(CONSTITUTION_ALL.map(it => it.chapter))];
+                chapters.forEach((ch, idx) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `px-2.5 py-1 rounded-lg font-bold border ${idx === 0 ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'}`;
+                    btn.innerText = ch;
+                    btn.onclick = () => filterDictByChapter(btn, ch);
+                    filterContainer.appendChild(btn);
+                });
+            }
+
+            CONSTITUTION_ALL.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'dict-card bg-white rounded-xl p-5 shadow-sm border border-slate-200 space-y-3 hover:border-amber-400 transition';
+                card.setAttribute('data-chapter', item.chapter);
+                card.setAttribute('data-search', `${item.numStr} ${item.title} ${item.text} ${item.keywords.map(k=>k.text).join(' ')}`);
+
+                const tagsHtml = item.keywords.map(kw => `<span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded font-medium border border-slate-200">#${kw.text}</span>`).join(' ');
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-amber-600 text-white font-serif font-bold rounded-lg text-xs">${item.numStr}</span>
+                            <span class="text-xs text-slate-500 font-bold">(${item.chapter})</span>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base">${item.title}</h3>
+                        </div>
+                        <button onclick="startFocusQuizFromDict('${item.id}')" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-lg transition border border-indigo-200 shrink-0">
+                            <i class="fa-solid fa-play text-[10px]"></i> 特訓
+                        </button>
+                    </div>
+                    
+                    <div class="font-serif leading-relaxed text-slate-900 text-sm sm:text-base border-l-2 border-slate-300 pl-3 py-1">
+                        ${item.text}
+                    </div>
+
+                    <div class="flex flex-wrap gap-1.5 pt-1">
+                        ${tagsHtml}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterDictByChapter(btnElement, chName) {
+            playSound('click');
+            document.querySelectorAll('#dict-chapter-filter button').forEach(b => {
+                b.className = 'px-2.5 py-1 rounded-lg font-bold border bg-white text-slate-700 border-slate-200 hover:bg-slate-100';
+            });
+            btnElement.className = 'px-2.5 py-1 rounded-lg font-bold border bg-slate-900 text-white border-slate-900';
+
+            document.querySelectorAll('.dict-card').forEach(card => {
+                const ch = card.getAttribute('data-chapter');
+                if (chName === 'すべて' || ch === chName) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function filterDictionary() {
+            const query = document.getElementById('dict-search-input').value.toLowerCase().trim();
+            document.querySelectorAll('.dict-card').forEach(card => {
+                const text = card.getAttribute('data-search').toLowerCase();
+                if (text.includes(query)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function startFocusQuizFromDict(itemId) {
+            appState.quizConfig.mode = 'focus';
+            appState.quizConfig.focusItemId = itemId;
+            
+            switchTab('quiz');
+            
+            const focusRadio = document.querySelector('input[name="quiz-mode"][value="focus"]');
+            if (focusRadio) focusRadio.checked = true;
+            toggleFocusArticleSelect();
+            document.getElementById('focus-article-select').value = itemId;
+
+            startQuiz();
+        }
+
+        // ================= アナリティクス描画 =================
+        function renderAnalyticsData() {
+            const totalAns = appState.stats.totalAnswered || 0;
+            const totalCor = appState.stats.totalCorrect || 0;
+            const rate = totalAns > 0 ? Math.round((totalCor / totalAns) * 100) : 0;
+
+            document.getElementById('stats-total-ans').innerText = totalAns;
+            document.getElementById('stats-accuracy-rate').innerText = `${rate}%`;
+
+            let masteredCount = 0;
+            const listContainer = document.getElementById('stats-articles-list');
+            listContainer.innerHTML = '';
+
+            CONSTITUTION_ALL.forEach(item => {
+                const stat = appState.stats.itemStats[item.id] || { answered: 0, correct: 0 };
+                const aRate = stat.answered > 0 ? Math.round((stat.correct / stat.answered) * 100) : 0;
+
+                if (stat.answered >= 3 && aRate >= 80) {
+                    masteredCount++;
+                }
+
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm';
+
+                let barColor = 'bg-slate-300';
+                if (stat.answered > 0) {
+                    if (aRate >= 80) barColor = 'bg-emerald-500';
+                    else if (aRate >= 50) barColor = 'bg-amber-500';
+                    else barColor = 'bg-rose-500';
+                }
+
+                row.innerHTML = `
+                    <div class="w-28 sm:w-36 font-bold text-slate-800 flex items-center gap-1.5 shrink-0">
+                        <span class="w-12 px-1 py-0.5 rounded bg-slate-800 text-white font-serif text-[10px] text-center shrink-0">${item.numStr}</span>
+                        <span class="truncate text-xs">${item.title}</span>
+                    </div>
+                    <div class="flex-1 mx-3">
+                        <div class="flex justify-between text-[11px] text-slate-500 mb-1">
+                            <span>正答率: ${aRate}% (${stat.correct}/${stat.answered}回)</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div class="${barColor} h-full transition-all duration-300" style="width: ${aRate}%"></div>
+                        </div>
+                    </div>
+                    <button onclick="startFocusQuizFromDict('${item.id}')" class="shrink-0 px-2 py-1 bg-white hover:bg-slate-100 border border-slate-300 rounded font-bold text-slate-700 text-[11px]">
+                        特訓
+                    </button>
+                `;
+                listContainer.appendChild(row);
+            });
+
+            document.getElementById('stats-mastered-count').innerText = `${masteredCount} / 111`;
+        }
+
+        function resetStatsData() {
+            if (confirm('これまでの回答結果・学習履歴をすべて初期化しますか？')) {
+                initDefaultStats();
+                renderAnalyticsData();
+            }
+        }
+
+        // ユーティリティ
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function getCircledNumber(num) {
+            const circled = ['❶', '❷', '❸', '❹', '❺', '❻', '❼', '❽', '❾', '❿'];
+            return circled[num - 1] || `${num}`;
+        }
+
+        /* JS Script End */
+    </script>
+</body>
+</html>
